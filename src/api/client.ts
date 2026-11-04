@@ -26,7 +26,7 @@ export class ApiError extends Error {
   }
 }
 
-function errorMessage(body: unknown, fallback: string) {
+export function formatApiMessage(body: unknown, fallback: string) {
   if (typeof body !== 'object' || body === null || !('message' in body)) {
     return fallback
   }
@@ -59,7 +59,7 @@ export async function api<T>(
   if (!response.ok) {
     let message = response.statusText || 'Request failed'
     try {
-      message = errorMessage(await response.json(), message)
+      message = formatApiMessage(await response.json(), message)
     } catch {
       // The body was not JSON.
     }

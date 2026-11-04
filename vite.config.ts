@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig, loadEnv } from 'vite'
+import { loadEnv } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -16,6 +17,17 @@ export default defineConfig(({ mode }) => {
         '/auth': apiUrl,
         '/users': apiUrl,
         '/api': apiUrl,
+      },
+    },
+    build: {
+      // The signed-in directory chunk is the MUI X Data Grid. It loads only after sign-in.
+      chunkSizeWarningLimit: 600,
+    },
+    test: {
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.ts',
+      env: {
+        VITE_API_URL: apiUrl,
       },
     },
   }
