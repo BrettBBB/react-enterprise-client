@@ -23,11 +23,23 @@ test('submits the trimmed email and password', async () => {
   render(<LoginPage />)
 
   await user.type(screen.getByRole('textbox', { name: /email/i }), 'ada@example.com')
-  await user.type(screen.getByLabelText(/password/i), 'ChangeMe123')
+  await user.type(screen.getByLabelText(/^password/i), 'ChangeMe123')
   await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
   expect(auth.login).toHaveBeenCalledWith('ada@example.com', 'ChangeMe123')
   expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+})
+
+test('shows the password text when the eye icon is pressed', async () => {
+  const user = userEvent.setup()
+  render(<LoginPage />)
+
+  const password = screen.getByLabelText(/^password/i)
+  expect(password).toHaveAttribute('type', 'password')
+  await user.click(screen.getByRole('button', { name: 'Show password' }))
+  expect(password).toHaveAttribute('type', 'text')
+  await user.click(screen.getByRole('button', { name: 'Hide password' }))
+  expect(password).toHaveAttribute('type', 'password')
 })
 
 test('shows the API error when sign-in fails', async () => {
@@ -36,7 +48,7 @@ test('shows the API error when sign-in fails', async () => {
   render(<LoginPage />)
 
   await user.type(screen.getByRole('textbox', { name: /email/i }), 'ada@example.com')
-  await user.type(screen.getByLabelText(/password/i), 'ChangeMe123')
+  await user.type(screen.getByLabelText(/^password/i), 'ChangeMe123')
   await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password')

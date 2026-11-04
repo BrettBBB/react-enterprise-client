@@ -1,5 +1,9 @@
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -23,6 +27,7 @@ export function LoginPage() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function update(field: keyof typeof emptyForm, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -111,12 +116,29 @@ export function LoginPage() {
           <TextField
             label="Password"
             name="password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete={registering ? 'new-password' : 'current-password'}
             value={form.password}
             onChange={(event) => update('password', event.target.value)}
             required
-            slotProps={{ htmlInput: { minLength: 8 } }}
+            slotProps={{
+              htmlInput: { minLength: 8 },
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      type="button"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword((current) => !current)}
+                      onMouseDown={(event) => event.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
             helperText="At least 8 characters."
             fullWidth
           />
