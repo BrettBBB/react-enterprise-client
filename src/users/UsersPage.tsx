@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,7 +11,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {
   DataGrid,
@@ -21,7 +19,6 @@ import {
   type GridDataSource,
 } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
-import { apiUrl } from '../api/client.ts';
 import { useAuth } from '../auth/auth-context.ts';
 import type { User, UserInput } from './types.ts';
 import { UserFormDialog } from './UserFormDialog.tsx';
@@ -41,7 +38,7 @@ function formatDateCell(value: Date | string | null | undefined) {
 
 export function UsersPage() {
   const apiRef = useGridApiRef();
-  const { user: session, logout, replaceSession } = useAuth();
+  const { user: session, replaceSession } = useAuth();
   const { error, getRows, createUser, updateUser, deleteUser } = useUsers();
   const dataSource = useMemo<GridDataSource>(() => ({ getRows }), [getRows]);
   const [editing, setEditing] = useState<User | null>(null);
@@ -149,27 +146,8 @@ export function UsersPage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
-          <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
-            Enterprise users
-          </Typography>
-          {session ? (
-            <Typography sx={{ mr: 2 }}>
-              {session.firstName} {session.lastName}
-            </Typography>
-          ) : null}
-          <Button color="inherit" href={`${apiUrl}/api`} target="_blank" rel="noreferrer">
-            API docs
-          </Button>
-          <Button color="inherit" onClick={logout}>
-            Sign out
-          </Button>
-        </Toolbar>
-      </AppBar>
-
-      <Stack spacing={2} sx={{ flex: 1, minHeight: 0, p: 3 }}>
+    <>
+      <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={2}
@@ -238,6 +216,6 @@ export function UsersPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </>
   );
 }
