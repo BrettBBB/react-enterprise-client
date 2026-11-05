@@ -30,6 +30,7 @@ describe('resourceUrl', () => {
   test('builds a resource address from the configured origin', () => {
     expect(resourceUrl(apiResources.users)).toBe(`${import.meta.env.VITE_API_URL}/users`)
     expect(resourceUrl(apiResources.auth, '/login')).toBe(`${import.meta.env.VITE_API_URL}/auth/login`)
+    expect(resourceUrl(apiResources.users, '?page=0')).toBe(`${import.meta.env.VITE_API_URL}/users?page=0`)
   })
 })
 

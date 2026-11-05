@@ -14,7 +14,12 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  useGridApiRef,
+  type GridColDef,
+  type GridDataSource,
+} from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { apiUrl } from '../api/client.ts';
 import { useAuth } from '../auth/auth-context.ts';
@@ -26,15 +31,29 @@ function formatWhen(value: string) {
   return new Date(value).toLocaleString();
 }
 
+function formatDateCell(value: Date | string | null | undefined) {
+  if (value == null || value === '') {
+    return '';
+  }
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : formatWhen(date.toISOString());
+}
+
 export function UsersPage() {
+  const apiRef = useGridApiRef();
   const { user: session, logout, replaceSession } = useAuth();
-  const { users, loading, error, refresh, createUser, updateUser, deleteUser } =
-    useUsers(true);
+  const { error, getRows, createUser, updateUser, deleteUser } = useUsers();
+  const dataSource = useMemo<GridDataSource>(() => ({ getRows }), [getRows]);
   const [editing, setEditing] = useState<User | null>(null);
   const [creating, setCreating] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<User | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  async function reload() {
+    apiRef.current?.dataSource.cache.clear();
+    await apiRef.current?.dataSource.fetchRows();
+  }
 
   const columns = useMemo<GridColDef<User>[]>(
     () => [
@@ -44,6 +63,7 @@ export function UsersPage() {
       {
         field: 'age',
         headerName: 'Age',
+        type: 'number',
         width: 90,
         valueFormatter: (value: number | null | undefined) =>
           value == null ? '' : String(value),
@@ -51,16 +71,20 @@ export function UsersPage() {
       {
         field: 'createdAt',
         headerName: 'Created',
+        type: 'dateTime',
         minWidth: 180,
         flex: 1,
-        valueFormatter: (value: string) => formatWhen(value),
+        valueGetter: (value: string | null) => (value ? new Date(value) : null),
+        valueFormatter: (value: Date | string | null) => formatDateCell(value),
       },
       {
         field: 'updatedAt',
         headerName: 'Updated',
+        type: 'dateTime',
         minWidth: 180,
         flex: 1,
-        valueFormatter: (value: string) => formatWhen(value),
+        valueGetter: (value: string | null) => (value ? new Date(value) : null),
+        valueFormatter: (value: Date | string | null) => formatDateCell(value),
       },
       {
         field: 'actions',
@@ -97,11 +121,13 @@ export function UsersPage() {
         replaceSession(updated);
       }
       setEditing(null);
+      await reload();
       return;
     }
 
     await createUser(input);
     setCreating(false);
+    await reload();
   }
 
   async function confirmDelete() {
@@ -114,6 +140,7 @@ export function UsersPage() {
     try {
       await deleteUser(pendingDelete.id);
       setPendingDelete(null);
+      await reload();
     } catch (caught) {
       setActionError(caught instanceof Error ? caught.message : 'Delete failed');
     } finally {
@@ -149,12 +176,10 @@ export function UsersPage() {
           sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
         >
           <Typography color="text.secondary">
-            Records from <code>GET /users</code>. That route requires the access token issued at sign-in.
+            Each page, sort, and filter is requested from <code>GET /users</code>.
           </Typography>
           <Stack direction="row" spacing={1}>
-            <Button onClick={() => void refresh()} disabled={loading}>
-              Refresh
-            </Button>
+            <Button onClick={() => void reload()}>Refresh</Button>
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>
               Add user
             </Button>
@@ -166,11 +191,16 @@ export function UsersPage() {
 
         <Box sx={{ flex: 1, minHeight: 420 }}>
           <DataGrid
-            rows={users}
+            apiRef={apiRef}
             columns={columns}
-            loading={loading}
+            dataSource={dataSource}
+            pagination
+            filterDebounceMs={300}
             pageSizeOptions={[5, 10, 25]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            initialState={{
+              pagination: { paginationModel: { page: 0, pageSize: 10 } },
+              sorting: { sortModel: [{ field: 'createdAt', sort: 'desc' }] },
+            }}
             disableRowSelectionOnClick
             showToolbar
             sx={{ bgcolor: 'background.paper' }}

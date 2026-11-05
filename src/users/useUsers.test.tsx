@@ -1,5 +1,6 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
+import type { GridGetRowsParams } from '@mui/x-data-grid'
 import type { User } from './types.ts'
 import { useUsers } from './useUsers.ts'
 
@@ -21,42 +22,40 @@ const ada: User = {
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
 
-const grace: User = {
-  id: '2',
-  firstName: 'Grace',
-  lastName: 'Hopper',
-  email: 'grace@example.com',
-  createdAt: '2026-02-01T00:00:00.000Z',
-  updatedAt: '2026-02-01T00:00:00.000Z',
+const params: GridGetRowsParams = {
+  start: 0,
+  end: 10,
+  paginationModel: { page: 0, pageSize: 10 },
+  sortModel: [{ field: 'createdAt', sort: 'desc' }],
+  filterModel: { items: [], quickFilterValues: ['ada'] },
 }
 
 beforeEach(() => {
   vi.mocked(listUsers).mockReset()
 })
 
-test('loads users newest first and clears the loading flag', async () => {
-  vi.mocked(listUsers).mockResolvedValue([ada, grace])
+test('passes the grid request through and keeps the server row order', async () => {
+  vi.mocked(listUsers).mockResolvedValue({ rows: [ada], rowCount: 12 })
 
-  const { result } = renderHook(() => useUsers(true))
+  const { result } = renderHook(() => useUsers())
+  let page: Awaited<ReturnType<typeof result.current.getRows>> | undefined
+  await act(async () => {
+    page = await result.current.getRows(params)
+  })
 
-  expect(result.current.loading).toBe(true)
-  await waitFor(() => expect(result.current.loading).toBe(false))
+  expect(listUsers).toHaveBeenCalledWith(params)
+  expect(page?.rows.map((user) => user.email)).toEqual(['ada@example.com'])
+  expect(page?.rowCount).toBe(12)
   expect(result.current.error).toBeNull()
-  expect(result.current.users.map((user) => user.email)).toEqual(['grace@example.com', 'ada@example.com'])
 })
 
 test('keeps the error message when the request fails', async () => {
   vi.mocked(listUsers).mockRejectedValue(new Error('Unauthorized'))
 
-  const { result } = renderHook(() => useUsers(true))
+  const { result } = renderHook(() => useUsers())
+  await act(async () => {
+    await expect(result.current.getRows(params)).rejects.toThrow('Unauthorized')
+  })
 
-  await waitFor(() => expect(result.current.loading).toBe(false))
-  expect(result.current.error).toBe('Unauthorized')
-  expect(result.current.users).toEqual([])
-})
-
-test('does not request users while the directory is disabled', () => {
-  renderHook(() => useUsers(false))
-
-  expect(listUsers).not.toHaveBeenCalled()
+  await waitFor(() => expect(result.current.error).toBe('Unauthorized'))
 })

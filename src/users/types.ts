@@ -15,3 +15,9 @@ export type UserInput = {
   password?: string;
   age?: number;
 };
+
+/** MUI X `GridGetRowsResponse` for this grid. */
+export type UserGridPage = {
+  rows: User[];
+  rowCount: number;
+};

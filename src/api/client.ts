@@ -12,6 +12,9 @@ function apiOrigin() {
 export const apiUrl = apiOrigin()
 
 export function resourceUrl(resource: ApiResource, path = '') {
+  if (path.startsWith('?')) {
+    return `${apiUrl}${resource}${path}`
+  }
   const suffix = path === '' ? '' : `/${path.replace(/^\//, '')}`
   return `${apiUrl}${resource}${suffix}`
 }
