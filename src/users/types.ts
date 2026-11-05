@@ -4,6 +4,7 @@ export type User = {
   lastName: string;
   email: string;
   age?: number | null;
+  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
 };

@@ -4,7 +4,7 @@ import { useAuth } from '../auth/auth-context.ts';
 
 export function HomePage() {
   const { user } = useAuth();
-  const name = user ? `${user.firstName} ${user.lastName}` : 'there';
+  const name = user ? `${user.firstName} ${user.lastName}` : 'Guest';
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 640 }}>
@@ -12,8 +12,9 @@ export function HomePage() {
         Welcome, {name}
       </Typography>
       <Typography color="text.secondary">
-        This is the home page. Open Users in the left navigation to work with the directory.
-        The grid asks the API for each page, sort, and filter.
+        {user?.isAdmin
+          ? 'Open Users in the left navigation to work with the directory. The grid asks the API for each page, sort, and filter.'
+          : 'This is the home page. The user directory is limited to administrators.'}
       </Typography>
     </Stack>
   );

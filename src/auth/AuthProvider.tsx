@@ -18,7 +18,13 @@ function readSession(): User | null {
   }
 
   try {
-    return JSON.parse(raw) as User;
+    const parsed = JSON.parse(raw) as Partial<User>;
+    if (!parsed.id || typeof parsed.isAdmin !== 'boolean') {
+      sessionStorage.removeItem(storageKey);
+      storeAccessToken(null);
+      return null;
+    }
+    return parsed as User;
   } catch {
     sessionStorage.removeItem(storageKey);
     return null;

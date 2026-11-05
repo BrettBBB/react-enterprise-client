@@ -13,6 +13,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { lazy, Suspense, useState } from 'react';
 import { apiUrl } from '../api/client.ts';
+import { LoginPage } from '../auth/LoginPage.tsx';
 import { useAuth } from '../auth/auth-context.ts';
 import { HomePage } from '../home/HomePage.tsx';
 
@@ -32,7 +33,16 @@ type PageId = (typeof pages)[number]['id'];
 export function AppShell() {
   const { user, logout } = useAuth();
   const [page, setPage] = useState<PageId>('home');
+  const [showSignIn, setShowSignIn] = useState(false);
+  const needsAuth = !user && (showSignIn || page === 'users');
   const current = pages.find((item) => item.id === page) ?? pages[0];
+  const canManageUsers = user?.isAdmin === true;
+
+  function signOut() {
+    setShowSignIn(false);
+    setPage('home');
+    logout();
+  }
 
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
@@ -43,19 +53,23 @@ export function AppShell() {
       >
         <Toolbar>
           <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
-            {current.label}
+            {needsAuth ? 'Sign in' : current.label}
           </Typography>
-          {user ? (
-            <Typography sx={{ mr: 2 }}>
-              {user.firstName} {user.lastName}
-            </Typography>
-          ) : null}
+          <Typography sx={{ mr: 2 }}>
+            {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
+          </Typography>
           <Button color="inherit" href={`${apiUrl}/api`} target="_blank" rel="noreferrer">
             API docs
           </Button>
-          <Button color="inherit" onClick={logout}>
-            Sign out
-          </Button>
+          {user ? (
+            <Button color="inherit" onClick={signOut}>
+              Sign out
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={() => setShowSignIn(true)}>
+              Sign in
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -93,16 +107,36 @@ export function AppShell() {
       >
         <Toolbar />
         <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', p: 3 }}>
-          <PageFrame page={page} />
+          <PageFrame page={page} needsAuth={needsAuth} canManageUsers={canManageUsers} />
         </Box>
       </Box>
     </Box>
   );
 }
 
-function PageFrame({ page }: { page: PageId }) {
+function PageFrame({
+  page,
+  needsAuth,
+  canManageUsers,
+}: {
+  page: PageId;
+  needsAuth: boolean;
+  canManageUsers: boolean;
+}) {
+  if (needsAuth) {
+    return <LoginPage />;
+  }
+
   if (page === 'home') {
     return <HomePage />;
+  }
+
+  if (!canManageUsers) {
+    return (
+      <Typography color="text.secondary" sx={{ maxWidth: 640 }}>
+        The user directory is limited to administrators.
+      </Typography>
+    );
   }
 
   return (

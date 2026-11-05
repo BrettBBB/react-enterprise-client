@@ -61,14 +61,11 @@ export function LoginPage() {
   const registering = mode === 'register';
 
   return (
-    <Stack
-      component="main"
-      sx={{ minHeight: '100%', alignItems: 'center', justifyContent: 'center', p: 2 }}
-    >
+    <Stack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Paper sx={{ width: '100%', maxWidth: 440, p: 4 }}>
         <Stack component="form" spacing={2} onSubmit={onSubmit}>
           <div>
-            <Typography variant="h4" component="h1">
+            <Typography variant="h4" component="p">
               Enterprise
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>

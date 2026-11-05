@@ -18,6 +18,7 @@ const ada: User = {
   firstName: 'Ada',
   lastName: 'Lovelace',
   email: 'ada@example.com',
+  isAdmin: false,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }
