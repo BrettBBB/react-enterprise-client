@@ -1,0 +1,80 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 800px;
+}
+
+.home-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.home-hero-icon {
+  font-size: 32px;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 2.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.home-lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.home-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.home-cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.home-page .home-card {
+  flex: 1;
+  min-width: 280px;
+  border-radius: 16px;
+}
+
+.home-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.home-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.home-card-copy {
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.home-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
