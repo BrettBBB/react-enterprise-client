@@ -29,6 +29,28 @@
   line-height: 1.6;
 }
 
+.home-byline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.home-byline-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.home-byline-name {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .home-section {
   display: flex;
   flex-direction: column;
@@ -77,4 +99,45 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.home-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-step {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.home-step-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #e7f3f0;
+  color: #0f6b5c;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.home-step-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.home-step-copy {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
