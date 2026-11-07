@@ -1,9 +1,11 @@
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { useState, type FormEvent } from 'react';
@@ -23,6 +25,7 @@ function valuesFrom(user: User | null) {
     email: user?.email ?? '',
     password: '',
     age: user?.age == null ? '' : String(user.age),
+    isAdmin: user?.isAdmin ?? false,
   };
 }
 
@@ -54,6 +57,9 @@ export function UserFormDialog({
     }
     if (age) {
       input.age = Number(age);
+    }
+    if (editing) {
+      input.isAdmin = form.isAdmin;
     }
 
     setSubmitting(true);
@@ -120,6 +126,19 @@ export function UserFormDialog({
               helperText={editing ? 'Leave blank to keep the current age.' : 'Optional. 0 to 120.'}
               fullWidth
             />
+            {editing ? (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.isAdmin}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, isAdmin: event.target.checked }))
+                    }
+                  />
+                }
+                label="Administrator"
+              />
+            ) : null}
           </Stack>
         </DialogContent>
         <DialogActions>

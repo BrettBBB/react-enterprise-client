@@ -15,6 +15,7 @@ export type UserInput = {
   email: string;
   password?: string;
   age?: number;
+  isAdmin?: boolean;
 };
 
 /** MUI X `GridGetRowsResponse` for this grid. */

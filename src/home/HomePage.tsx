@@ -87,9 +87,10 @@ export function HomePage() {
               </div>
               <p className="home-card-copy text-secondary">
                 A NestJS API built as ECMAScript modules. DTO validation checks
-                every request and rejects fields the contract does not declare,
-                so a client cannot grant the admin role. Passwords are stored as
-                scrypt hashes. Listing or changing users requires an
+                every request and rejects fields the contract does not declare.
+                Registration cannot set the admin role. An administrator sets it
+                when editing a user. Passwords are stored as scrypt hashes.
+                Listing or changing users requires an
                 administrator JWT, and OpenAPI publishes the contract.
               </p>
               <div className="home-chips">

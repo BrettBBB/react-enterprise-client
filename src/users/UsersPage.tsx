@@ -58,6 +58,14 @@ export function UsersPage() {
       { field: 'lastName', headerName: 'Last name', flex: 1, minWidth: 130 },
       { field: 'email', headerName: 'Email', flex: 1.4, minWidth: 200 },
       {
+        field: 'isAdmin',
+        headerName: 'Admin',
+        type: 'boolean',
+        width: 100,
+        sortable: false,
+        filterable: false,
+      },
+      {
         field: 'age',
         headerName: 'Age',
         type: 'number',
