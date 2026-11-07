@@ -71,9 +71,17 @@
 }
 
 .home-page .home-card {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 280px;
   border-radius: 16px;
+}
+
+.home-page .home-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .home-card-heading {
@@ -99,6 +107,26 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.home-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 16px;
+  color: #0f6b5c;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.home-repo:hover {
+  text-decoration: underline;
+}
+
+.home-repo .home-repo-icon {
+  font-size: 1.125rem;
 }
 
 .home-steps {

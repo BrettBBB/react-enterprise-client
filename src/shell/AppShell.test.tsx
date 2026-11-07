@@ -74,6 +74,15 @@ test('shows a guest on Home and asks them to sign in before Users', async () => 
 
   expect(screen.getByText('Guest')).toBeInTheDocument()
   expect(screen.getByText(/Welcome, Guest/)).toBeInTheDocument()
+  expect(screen.getByText(`© ${new Date().getFullYear()} Brett Brinkhoff`)).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+    'href',
+    'https://www.linkedin.com/in/brett-brinkhoff/',
+  )
+  expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+    'href',
+    'https://github.com/BrettBBB',
+  )
   expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add user' })).not.toBeInTheDocument()
 

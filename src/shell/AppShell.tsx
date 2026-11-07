@@ -1,4 +1,6 @@
+import GitHubIcon from '@mui/icons-material/GitHub';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -106,9 +108,28 @@ export function AppShell() {
         sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}
       >
         <Toolbar />
-        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', p: 3 }}>
+        <Box
+          sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', p: 3, overflow: 'auto' }}
+        >
           <PageFrame page={page} needsAuth={needsAuth} canManageUsers={canManageUsers} />
         </Box>
+        <footer className="app-footer">
+          <p className="app-footer-copy">© {new Date().getFullYear()} Brett Brinkhoff</p>
+          <nav className="app-footer-links" aria-label="Professional profiles">
+            <a
+              href="https://www.linkedin.com/in/brett-brinkhoff/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LinkedInIcon className="app-footer-icon" aria-hidden />
+              LinkedIn
+            </a>
+            <a href="https://github.com/BrettBBB" target="_blank" rel="noreferrer">
+              <GitHubIcon className="app-footer-icon" aria-hidden />
+              GitHub
+            </a>
+          </nav>
+        </footer>
       </Box>
     </Box>
   );

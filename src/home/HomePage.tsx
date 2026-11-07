@@ -1,6 +1,7 @@
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import ArchitectureIcon from "@mui/icons-material/Architecture";
 import CodeIcon from "@mui/icons-material/Code";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import StorageIcon from "@mui/icons-material/Storage";
 import { Card, CardContent, Chip, Divider } from "@mui/material";
 
@@ -22,6 +23,15 @@ const pipeline = [
     copy: "Production data is Neon Postgres. The running API uses the pooled connection. Schema changes are applied with Prisma’s deploy command on the direct connection, using the same migration history as local development.",
   },
 ] as const;
+
+function RepoLink({ href, name }: { href: string; name: string }) {
+  return (
+    <a className="home-repo" href={href} target="_blank" rel="noreferrer">
+      <GitHubIcon className="home-repo-icon" aria-hidden />
+      {name}
+    </a>
+  );
+}
 
 export function HomePage() {
   const { user } = useAuth();
@@ -59,7 +69,7 @@ export function HomePage() {
 
         <div className="home-cards">
           <Card className="home-card" variant="outlined">
-            <CardContent>
+            <CardContent className="home-card-body">
               <div className="home-card-heading">
                 <CodeIcon color="primary" />
                 <h3 className="home-card-title">Client</h3>
@@ -76,11 +86,15 @@ export function HomePage() {
                 <Chip label="Vite" size="small" variant="outlined" />
                 <Chip label="MUI" size="small" variant="outlined" />
               </div>
+              <RepoLink
+                href="https://github.com/BrettBBB/react-enterprise-client"
+                name="react-enterprise-client"
+              />
             </CardContent>
           </Card>
 
           <Card className="home-card" variant="outlined">
-            <CardContent>
+            <CardContent className="home-card-body">
               <div className="home-card-heading">
                 <StorageIcon color="primary" />
                 <h3 className="home-card-title">API</h3>
@@ -100,6 +114,10 @@ export function HomePage() {
                 <Chip label="JWT" size="small" variant="outlined" />
                 <Chip label="RBAC" size="small" variant="outlined" />
               </div>
+              <RepoLink
+                href="https://github.com/BrettBBB/nest-enterprise-api"
+                name="nest-enterprise-api"
+              />
             </CardContent>
           </Card>
         </div>

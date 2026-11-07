@@ -12,3 +12,43 @@ code {
 .text-secondary {
   color: rgba(0, 0, 0, 0.6);
 }
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-shrink: 0;
+  padding: 12px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}
+
+.app-footer-copy {
+  margin: 0;
+}
+
+.app-footer-links {
+  display: flex;
+  gap: 16px;
+}
+
+.app-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0f6b5c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-footer-links .app-footer-icon {
+  font-size: 1.125rem;
+}
+
+.app-footer-links a:hover {
+  text-decoration: underline;
+}
