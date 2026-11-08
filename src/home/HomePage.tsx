@@ -47,8 +47,10 @@ export function HomePage() {
         <p className="home-lead text-secondary">
           This application is how I show lead full-stack work: a typed React
           client, a NestJS API, and a production path from GitHub through Render
-          to Neon Postgres. Sign-in issues a JWT, and role-based access uses the
-          admin claim on that token. Guests can read this page. An administrator
+          to Neon Postgres. Sign-in issues a 15-minute access token and a 7-day
+          HttpOnly refresh cookie. When a request receives a 401, the client
+          renews the access token in the background, and role-based access uses
+          the admin claim. Guests can read this page. An administrator
           can open the user directory, where every page, sort, and filter is
           requested from the API.
         </p>
@@ -76,9 +78,10 @@ export function HomePage() {
               </div>
               <p className="home-card-copy text-secondary">
                 A Vite and React application in TypeScript, using Material UI.
-                The session keeps the signed-in profile and JWT, and sends that
-                token with each API request. The admin claim decides who can
-                view and edit users.
+                The session keeps the signed-in profile and the short-lived
+                access token, and sends that token with each API request. A 401
+                exchanges the refresh cookie for a new access token and retries
+                the request. The admin claim decides who can view and edit users.
               </p>
               <div className="home-chips">
                 <Chip label="React" size="small" variant="outlined" />
@@ -104,14 +107,18 @@ export function HomePage() {
                 every request and rejects fields the contract does not declare.
                 Registration cannot set the admin role. An administrator sets it
                 when editing a user. Passwords are stored as scrypt hashes.
-                Listing or changing users requires an
-                administrator JWT, and OpenAPI publishes the contract.
+                Sign-in returns the access token in the response and sets the
+                refresh token as an HttpOnly cookie. Each renewal extends that
+                cookie for seven days of activity. Listing or changing users
+                requires an administrator access token, and OpenAPI publishes
+                the contract.
               </p>
               <div className="home-chips">
                 <Chip label="NestJS" size="small" variant="outlined" />
                 <Chip label="Prisma" size="small" variant="outlined" />
                 <Chip label="PostgreSQL" size="small" variant="outlined" />
                 <Chip label="JWT" size="small" variant="outlined" />
+                <Chip label="Refresh cookie" size="small" variant="outlined" />
                 <Chip label="RBAC" size="small" variant="outlined" />
               </div>
               <RepoLink

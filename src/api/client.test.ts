@@ -59,6 +59,94 @@ describe('api', () => {
     })
   })
 
+  test('renews an expired access token and retries the original request', async () => {
+    storeAccessToken('expired-token')
+    sessionStorage.setItem(
+      'enterprise.session',
+      JSON.stringify({
+        id: 'user-1',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        email: 'ada@example.com',
+        isAdmin: true,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      }),
+    )
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url.endsWith('/auth/refresh')) {
+        expect(init?.credentials).toBe('include')
+        return new Response(
+          JSON.stringify({
+            accessToken: 'next-token',
+            refreshExpiresAt: '2026-11-14T00:00:00.000Z',
+            user: {
+              id: 'user-1',
+              firstName: 'Ada',
+              lastName: 'Lovelace',
+              email: 'ada@example.com',
+              isAdmin: true,
+              createdAt: '2026-01-01T00:00:00.000Z',
+              updatedAt: '2026-01-01T00:00:00.000Z',
+            },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      const authorization = new Headers(init?.headers).get('Authorization')
+      if (authorization === 'Bearer expired-token') {
+        return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      return new Response(JSON.stringify({ id: 'user-1' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(api(apiResources.users)).resolves.toEqual({ id: 'user-1' })
+    expect(sessionStorage.getItem('enterprise.accessToken')).toBe('next-token')
+  })
+
+  test('clears a stored session when the refresh cookie is rejected', async () => {
+    storeAccessToken('signed-token')
+    sessionStorage.setItem('enterprise.session', JSON.stringify({ id: 'user-1', isAdmin: true }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async () =>
+        new Response(JSON.stringify({ message: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    )
+
+    await expect(api(apiResources.users)).rejects.toMatchObject({ status: 401, message: 'Unauthorized' })
+    expect(sessionStorage.getItem('enterprise.accessToken')).toBeNull()
+    expect(sessionStorage.getItem('enterprise.session')).toBeNull()
+  })
+
+  test('leaves a signed-out session alone when login is unauthorized', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ message: 'Invalid email or password' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    )
+
+    await expect(api(apiResources.auth, 'login', { method: 'POST', body: '{}' })).rejects.toMatchObject({
+      status: 401,
+    })
+    expect(sessionStorage.getItem('enterprise.session')).toBeNull()
+  })
+
   test('sends the stored access token and returns the parsed JSON body', async () => {
     storeAccessToken('signed-token')
     const fetchMock = vi.fn().mockResolvedValue(

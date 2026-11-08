@@ -175,7 +175,7 @@
 
 .app-claims div {
   display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr);
+  grid-template-columns: 4rem minmax(0, 1fr);
   gap: 8px;
   align-items: baseline;
 }

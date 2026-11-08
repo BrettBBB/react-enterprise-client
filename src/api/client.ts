@@ -1,5 +1,13 @@
-import { type ApiResource } from './resources.ts'
+import { expireSession, notifySessionRefreshed, storeSession } from '../auth/session.ts'
+import type { User } from '../users/types.ts'
+import { apiResources, type ApiResource } from './resources.ts'
 import { readAccessToken } from './session.ts'
+
+export type AuthSession = {
+  accessToken: string
+  refreshExpiresAt: string
+  user: User
+}
 
 function apiOrigin() {
   const configured = import.meta.env.VITE_API_URL
@@ -48,21 +56,68 @@ export function formatApiMessage(body: unknown, fallback: string) {
   return fallback
 }
 
+const refreshPaths = new Set(['login', 'register', 'refresh', 'logout'])
+
+function skipsRefresh(resource: ApiResource, path: string) {
+  return resource === apiResources.auth && refreshPaths.has(path.replace(/^\//, ''))
+}
+
+let pendingRefresh: Promise<AuthSession | null> | null = null
+
+export function refreshAccessToken() {
+  if (!pendingRefresh) {
+    pendingRefresh = requestRefresh().finally(() => {
+      pendingRefresh = null
+    })
+  }
+  return pendingRefresh
+}
+
+async function requestRefresh() {
+  const response = await fetch(resourceUrl(apiResources.auth, 'refresh'), {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    return null
+  }
+
+  const session = (await response.json()) as Partial<AuthSession>
+  if (!session.accessToken || !session.user || !session.refreshExpiresAt) {
+    return null
+  }
+  const next = session as AuthSession
+  storeSession(next.user, next.accessToken, next.refreshExpiresAt)
+  notifySessionRefreshed()
+  return next
+}
+
+async function send(resource: ApiResource, path: string, init: RequestInit | undefined, accessToken: string | null) {
+  const headers = new Headers(init?.headers)
+  if (init?.body !== undefined && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`)
+  }
+  return fetch(resourceUrl(resource, path), { ...init, headers })
+}
+
 export async function api<T>(
   resource: ApiResource,
   path = '',
   init?: RequestInit,
 ): Promise<T> {
-  const headers = new Headers(init?.headers)
-  if (init?.body !== undefined && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json')
-  }
   const accessToken = readAccessToken()
-  if (accessToken && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${accessToken}`)
+  let response = await send(resource, path, init, accessToken)
+  if (response.status === 401 && accessToken && !skipsRefresh(resource, path)) {
+    const renewed = await refreshAccessToken()
+    if (!renewed) {
+      expireSession()
+    } else {
+      response = await send(resource, path, init, renewed.accessToken)
+    }
   }
-
-  const response = await fetch(resourceUrl(resource, path), { ...init, headers })
   if (!response.ok) {
     let message = response.statusText || 'Request failed'
     try {

@@ -1,34 +1,63 @@
 import {
   useCallback,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react';
 import { readAccessToken } from '../api/session.ts';
-import { login as loginRequest, register as registerRequest } from './auth-api.ts';
+import {
+  login as loginRequest,
+  logoutRequest,
+  register as registerRequest,
+  type AuthResult,
+} from './auth-api.ts';
 import type { User, UserInput } from '../users/types.ts';
 import { AuthContext, type AuthContextValue } from './auth-context.ts';
-import { readSession, storeSession } from './session.ts';
+import {
+  readSession,
+  storeSession,
+  subscribeSessionExpired,
+  subscribeSessionRefreshed,
+} from './session.ts';
+import { useRefreshOnExpiry } from './useRefreshOnExpiry.ts';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(readSession);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const next = await loginRequest(email, password);
-    storeSession(next.user, next.accessToken);
+  const remember = useCallback((next: AuthResult) => {
+    storeSession(next.user, next.accessToken, next.refreshExpiresAt);
     setUser(next.user);
   }, []);
+
+  const login = useCallback(async (email: string, password: string) => {
+    remember(await loginRequest(email, password));
+  }, [remember]);
 
   const register = useCallback(async (input: UserInput) => {
-    const next = await registerRequest(input);
-    storeSession(next.user, next.accessToken);
-    setUser(next.user);
-  }, []);
+    remember(await registerRequest(input));
+  }, [remember]);
 
   const logout = useCallback(() => {
+    void logoutRequest().catch(() => undefined);
     storeSession(null, null);
     setUser(null);
   }, []);
+
+  useEffect(() => subscribeSessionExpired(() => setUser(null)), []);
+
+  useEffect(
+    () =>
+      subscribeSessionRefreshed(() => {
+        const next = readSession();
+        if (next) {
+          setUser(next);
+        }
+      }),
+    [],
+  );
+
+  useRefreshOnExpiry(user, logout);
 
   const replaceSession = useCallback((next: User) => {
     storeSession(next, readAccessToken());

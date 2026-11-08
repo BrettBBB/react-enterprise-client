@@ -42,6 +42,27 @@ export function decodeAccessToken(token: string): AccessClaims | null {
   }
 }
 
+export function accessTokenRemaining(token: string | null, now = Date.now()) {
+  if (!token) {
+    return null
+  }
+  const claims = decodeAccessToken(token)
+  if (!claims) {
+    return null
+  }
+  return claims.exp * 1000 - now
+}
+
+export function formatLifetime(milliseconds: number) {
+  const remaining = Math.max(0, Math.floor(milliseconds / 1000))
+  const days = Math.floor(remaining / 86_400)
+  if (days > 0) {
+    const hours = Math.floor((remaining % 86_400) / 3600)
+    return `${days}d ${hours}h`
+  }
+  return formatRemaining(milliseconds)
+}
+
 export function formatRemaining(milliseconds: number) {
   const remaining = Math.max(0, Math.floor(milliseconds / 1000))
   const hours = Math.floor(remaining / 3600)
