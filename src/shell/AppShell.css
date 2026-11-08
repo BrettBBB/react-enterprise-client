@@ -1,3 +1,21 @@
+.app-limited {
+  max-width: 640px;
+}
+
+.app-drawer {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.app-drawer .MuiDrawer-paper {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 280px;
+  height: 100%;
+  position: relative;
+}
+
 .app-sidebar {
   display: flex;
   flex: 1;

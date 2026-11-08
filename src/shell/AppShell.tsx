@@ -4,7 +4,6 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -21,7 +20,7 @@ const UsersPage = lazy(() =>
   import('../users/UsersPage.tsx').then((module) => ({ default: module.UsersPage })),
 );
 
-const drawerWidth = 280;
+const copyrightYear = new Date().getFullYear();
 
 const pages = [
   { id: 'home', label: 'Home', icon: <HomeOutlinedIcon /> },
@@ -45,7 +44,7 @@ export function AppShell() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="app-frame">
       <AppBar position="static" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Toolbar>
           <div className="app-brand">
@@ -60,7 +59,7 @@ export function AppShell() {
           <Typography component="h1" className="app-page-title">
             {needsAuth ? 'Sign in' : current.label}
           </Typography>
-          <Typography sx={{ mr: 2 }}>
+          <Typography className="app-account-name">
             {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
           </Typography>
           {user ? (
@@ -75,59 +74,42 @@ export function AppShell() {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          },
-        }}
-      >
-        <div className="app-sidebar">
-          <nav className="app-nav" aria-label="Primary">
-            {pages.map((item) => {
-              const selected = item.id === page
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="app-nav-item"
-                  aria-current={selected ? 'page' : undefined}
-                  onClick={() => setPage(item.id)}
-                >
-                  {item.icon}
-                  <span className="app-nav-label">{item.label}</span>
-                  {item.id === 'users' ? (
-                    <span className="app-nav-badge" aria-hidden="true">
-                      RBAC
-                    </span>
-                  ) : null}
-                  {selected ? <span className="app-nav-dot" aria-hidden="true" /> : null}
-                </button>
-              )
-            })}
-          </nav>
-          <SessionInspector />
-        </div>
-      </Drawer>
+      <div className="app-body">
+        <Drawer variant="permanent" className="app-drawer">
+          <div className="app-sidebar">
+            <nav className="app-nav" aria-label="Primary">
+              {pages.map((item) => {
+                const selected = item.id === page
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="app-nav-item"
+                    aria-current={selected ? 'page' : undefined}
+                    onClick={() => setPage(item.id)}
+                  >
+                    {item.icon}
+                    <span className="app-nav-label">{item.label}</span>
+                    {item.id === 'users' ? (
+                      <span className="app-nav-badge" aria-hidden="true">
+                        RBAC
+                      </span>
+                    ) : null}
+                    {selected ? <span className="app-nav-dot" aria-hidden="true" /> : null}
+                  </button>
+                )
+              })}
+            </nav>
+            <SessionInspector />
+          </div>
+        </Drawer>
 
-      <Box
-        component="main"
-        sx={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', p: 3, overflow: 'auto' }}
-      >
-        <PageFrame page={page} needsAuth={needsAuth} canManageUsers={canManageUsers} />
-      </Box>
-      </Box>
+        <main className="app-main">
+          <PageFrame page={page} needsAuth={needsAuth} canManageUsers={canManageUsers} />
+        </main>
+      </div>
       <footer className="app-footer">
-        <p className="app-footer-copy">© {new Date().getFullYear()} Brett Brinkhoff</p>
+        <p className="app-footer-copy">© {copyrightYear} Brett Brinkhoff</p>
         <nav className="app-footer-links" aria-label="Footer links">
           <a href={`${apiUrl}/api`} target="_blank" rel="noreferrer">
             <DescriptionOutlinedIcon className="app-footer-icon" aria-hidden />
@@ -147,7 +129,7 @@ export function AppShell() {
           </a>
         </nav>
       </footer>
-    </Box>
+    </div>
   );
 }
 
@@ -170,7 +152,7 @@ function PageFrame({
 
   if (!canManageUsers) {
     return (
-      <Typography color="text.secondary" sx={{ maxWidth: 640 }}>
+      <Typography className="app-limited" color="text.secondary">
         The user directory is limited to administrators.
       </Typography>
     );

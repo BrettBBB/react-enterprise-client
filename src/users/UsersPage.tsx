@@ -19,6 +19,7 @@ import {
   type GridDataSource,
 } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
+import { errorMessage } from '../api/client.ts';
 import { useAuth } from '../auth/auth-context.ts';
 import type { User, UserInput } from './types.ts';
 import { UserFormDialog } from './UserFormDialog.tsx';
@@ -147,7 +148,7 @@ export function UsersPage() {
       setPendingDelete(null);
       await reload();
     } catch (caught) {
-      setActionError(caught instanceof Error ? caught.message : 'Delete failed');
+      setActionError(errorMessage(caught, 'Delete failed'));
     } finally {
       setDeleting(false);
     }

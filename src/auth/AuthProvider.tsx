@@ -4,47 +4,11 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { readAccessToken, storeAccessToken } from '../api/session.ts';
+import { readAccessToken } from '../api/session.ts';
 import { login as loginRequest, register as registerRequest } from './auth-api.ts';
 import type { User, UserInput } from '../users/types.ts';
 import { AuthContext, type AuthContextValue } from './auth-context.ts';
-
-const storageKey = 'enterprise.session';
-
-function readSession(): User | null {
-  const raw = sessionStorage.getItem(storageKey);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<User>;
-    if (!parsed.id || typeof parsed.isAdmin !== 'boolean') {
-      sessionStorage.removeItem(storageKey);
-      storeAccessToken(null);
-      return null;
-    }
-    return parsed as User;
-  } catch {
-    sessionStorage.removeItem(storageKey);
-    return null;
-  }
-}
-
-function storeSession(user: User | null, accessToken?: string | null) {
-  if (user) {
-    sessionStorage.setItem(storageKey, JSON.stringify(user));
-  } else {
-    sessionStorage.removeItem(storageKey);
-  }
-  if (user === null) {
-    storeAccessToken(null);
-    return;
-  }
-  if (accessToken !== undefined) {
-    storeAccessToken(accessToken);
-  }
-}
+import { readSession, storeSession } from './session.ts';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(readSession);

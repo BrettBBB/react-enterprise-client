@@ -19,6 +19,10 @@ export function resourceUrl(resource: ApiResource, path = '') {
   return `${apiUrl}${resource}${suffix}`
 }
 
+export function errorMessage(caught: unknown, fallback: string) {
+  return caught instanceof Error && caught.message.length > 0 ? caught.message : fallback
+}
+
 export class ApiError extends Error {
   status: number
 

@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { GridGetRowsParams } from '@mui/x-data-grid';
+import { errorMessage } from '../api/client.ts';
 import {
   createUser as createUserRequest,
   deleteUser as deleteUserRequest,
@@ -7,10 +8,6 @@ import {
   updateUser as updateUserRequest,
 } from './users-api.ts';
 import type { UserGridPage, UserInput } from './types.ts';
-
-function messageFrom(caught: unknown, fallback: string) {
-  return caught instanceof Error ? caught.message : fallback;
-}
 
 export function useUsers() {
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +18,7 @@ export function useUsers() {
       setError(null);
       return page;
     } catch (caught) {
-      setError(messageFrom(caught, 'Could not load users'));
+      setError(errorMessage(caught, 'Could not load users'));
       throw caught;
     }
   }, []);

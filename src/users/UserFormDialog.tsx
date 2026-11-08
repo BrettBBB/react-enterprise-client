@@ -9,6 +9,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { useState, type FormEvent } from 'react';
+import { errorMessage } from '../api/client.ts';
 import type { User, UserInput } from './types.ts';
 
 type UserFormDialogProps = {
@@ -67,7 +68,7 @@ export function UserFormDialog({
     try {
       await onSubmit(input);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Save failed');
+      setError(errorMessage(caught, 'Save failed'));
     } finally {
       setSubmitting(false);
     }

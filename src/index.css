@@ -5,6 +5,28 @@ body,
   margin: 0;
 }
 
+.app-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 24px;
+  overflow: auto;
+}
+
 code {
   font-family: ui-monospace, Consolas, monospace;
 }
@@ -67,6 +89,10 @@ code {
 .MuiButton-root.app-account-button:hover,
 .MuiButton-root.app-account-button:focus-visible {
   background-color: rgba(var(--mui-palette-text-primaryChannel) / 0.16);
+}
+
+.MuiTypography-root.app-account-name {
+  margin: 0 16px 0 0;
 }
 
 .MuiTypography-root.app-page-title {

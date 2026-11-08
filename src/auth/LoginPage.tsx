@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useState, type FormEvent } from 'react';
+import { errorMessage } from '../api/client.ts';
 import { useAuth } from './auth-context.ts';
 
 type Mode = 'sign-in' | 'register';
@@ -52,7 +53,7 @@ export function LoginPage() {
         ...(age ? { age: Number(age) } : {}),
       });
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Sign-in failed');
+      setError(errorMessage(caught, 'Sign-in failed'));
     } finally {
       setSubmitting(false);
     }
@@ -66,7 +67,7 @@ export function LoginPage() {
         <Stack component="form" spacing={2} onSubmit={onSubmit}>
           <div>
             <Typography variant="h4" component="p">
-              Enterprise
+              Brett Brinkhoff
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>
               {registering
