@@ -10,7 +10,72 @@ code {
 }
 
 .text-secondary {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--mui-palette-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.app-brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  background-image: linear-gradient(to bottom right, #38bdf8, #2563eb);
+  color: #020617;
+  font-family: ui-sans-serif, arial-black, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 900;
+  line-height: 1.25rem;
+  box-shadow:
+    0 4px 6px -1px rgb(56 189 248 / 0.2),
+    0 2px 4px -2px rgb(56 189 248 / 0.2);
+}
+
+.app-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-brand-name {
+  color: var(--mui-palette-text-primary, #fff);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.app-brand-role {
+  color: var(--mui-palette-primary-main, #38bdf8);
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.MuiButton-root.app-account-button {
+  background-color: rgba(var(--mui-palette-text-primaryChannel) / 0.08);
+}
+
+.MuiButton-root.app-account-button:hover,
+.MuiButton-root.app-account-button:focus-visible {
+  background-color: rgba(var(--mui-palette-text-primaryChannel) / 0.16);
+}
+
+.MuiTypography-root.app-page-title {
+  flex: 1;
+  margin: 0 0 0 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--mui-palette-text-secondary, rgba(255, 255, 255, 0.7));
 }
 
 .app-footer {
@@ -21,14 +86,15 @@ code {
   gap: 12px 24px;
   flex-shrink: 0;
   padding: 12px 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
-  color: rgba(0, 0, 0, 0.6);
+  border-top: 1px solid var(--mui-palette-divider, #334155);
+  background: var(--mui-palette-background-paper, #1e293b);
+  color: var(--mui-palette-text-secondary, rgba(255, 255, 255, 0.7));
   font-size: 0.875rem;
 }
 
 .app-footer-copy {
   margin: 0;
+  opacity: 0.7;
 }
 
 .app-footer-links {
@@ -40,7 +106,7 @@ code {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #0f6b5c;
+  color: var(--mui-palette-primary-main, #38bdf8);
   font-weight: 600;
   text-decoration: none;
 }

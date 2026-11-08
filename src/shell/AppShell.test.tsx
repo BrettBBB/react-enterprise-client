@@ -73,8 +73,14 @@ test('shows a guest on Home and asks them to sign in before Users', async () => 
   render(<AppShell />)
 
   expect(screen.getByText('Guest')).toBeInTheDocument()
+  expect(screen.getByText('401 Unauthenticated')).toBeInTheDocument()
   expect(screen.getByText(/Welcome, Guest/)).toBeInTheDocument()
   expect(screen.getByText(`© ${new Date().getFullYear()} Brett Brinkhoff`)).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'API docs' })).toHaveAttribute(
+    'href',
+    `${import.meta.env.VITE_API_URL}/api`,
+  )
+  expect(screen.queryByRole('button', { name: 'API docs' })).not.toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
     'href',
     'https://www.linkedin.com/in/brett-brinkhoff/',

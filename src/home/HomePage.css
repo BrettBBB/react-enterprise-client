@@ -115,7 +115,7 @@
   gap: 6px;
   margin-top: auto;
   padding-top: 16px;
-  color: #0f6b5c;
+  color: var(--mui-palette-primary-main, #38BDF8);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
@@ -152,8 +152,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: #e7f3f0;
-  color: #0f6b5c;
+  background: color-mix(in srgb, var(--mui-palette-primary-main, #38BDF8) 16%, transparent);
+  color: var(--mui-palette-primary-main, #38BDF8);
   font-size: 0.875rem;
   font-weight: 700;
 }
