@@ -49,7 +49,7 @@ export function AppShell() {
   return (
     <div className="app-frame">
       <AppBar position="static" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Toolbar>
+        <Toolbar className="app-toolbar">
           <div className="app-brand">
             <span className="app-brand-mark" aria-hidden="true">
               BB

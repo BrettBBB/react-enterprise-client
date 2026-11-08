@@ -35,11 +35,18 @@ code {
   color: var(--mui-palette-text-secondary, rgba(255, 255, 255, 0.7));
 }
 
+.app-toolbar.MuiToolbar-root {
+  padding-left: 0;
+}
+
 .app-brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  box-sizing: border-box;
+  width: 280px;
   flex-shrink: 0;
+  padding-left: 24px;
 }
 
 .app-brand-mark {
@@ -97,7 +104,8 @@ code {
 
 .MuiTypography-root.app-page-title {
   flex: 1;
-  margin: 0 0 0 40px;
+  margin: 0;
+  padding-left: 24px;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.2;
