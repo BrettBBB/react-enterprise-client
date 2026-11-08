@@ -4,10 +4,12 @@ import CodeIcon from "@mui/icons-material/Code";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import StorageIcon from "@mui/icons-material/Storage";
 import { Card, CardContent, Chip, Divider } from "@mui/material";
+import { useState } from "react";
 
 import portrait from "../assets/Brett-Stylized2.jpg";
 import { useAuth } from "../auth/auth-context.ts";
 import "./HomePage.css";
+import { SystemFlowDialog } from "./SystemFlowDialog.tsx";
 
 const pipeline = [
   {
@@ -36,6 +38,7 @@ function RepoLink({ href, name }: { href: string; name: string }) {
 export function HomePage() {
   const { user } = useAuth();
   const name = user ? `${user.firstName} ${user.lastName}` : "Guest";
+  const [flowOpen, setFlowOpen] = useState(false);
 
   return (
     <div className="home-page">
@@ -131,9 +134,12 @@ export function HomePage() {
       </div>
 
       <div className="home-section">
-        <div className="home-heading-row">
+        <div className="home-heading-row home-flow-heading">
           <AccountTreeIcon color="primary" />
           <h2 className="home-section-title">From a push to production</h2>
+          <button type="button" className="home-flow-button" onClick={() => setFlowOpen(true)}>
+            View System Flow Diagram
+          </button>
         </div>
         <p className="home-lead text-secondary">
           Application code and database schema each have a deliberate path.
@@ -158,6 +164,7 @@ export function HomePage() {
           <Chip label="Prisma Migrate" size="small" variant="outlined" />
         </div>
       </div>
+      <SystemFlowDialog open={flowOpen} onClose={() => setFlowOpen(false)} />
     </div>
   );
 }
