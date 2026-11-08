@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/auth': apiUrl,
         '/users': apiUrl,
+        '/email': apiUrl,
         '/api': apiUrl,
       },
     },

@@ -89,8 +89,14 @@ test('shows a guest on Home and asks them to sign in before Users', async () => 
     'href',
     'https://github.com/BrettBBB',
   )
+  expect(screen.getByRole('button', { name: 'Contact' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add user' })).not.toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Contact' }))
+
+  expect(screen.getByRole('heading', { name: 'Contact' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument()
 
   await user.click(screen.getByRole('button', { name: 'Users' }))
 

@@ -2,6 +2,7 @@
 export const apiResources = {
   auth: '/auth',
   users: '/users',
+  email: '/email',
 } as const
 
 export type ApiResource = (typeof apiResources)[keyof typeof apiResources]

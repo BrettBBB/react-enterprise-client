@@ -2,6 +2,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -12,6 +13,7 @@ import { lazy, Suspense, useState } from 'react';
 import { apiUrl } from '../api/client.ts';
 import { LoginPage } from '../auth/LoginPage.tsx';
 import { useAuth } from '../auth/auth-context.ts';
+import { ContactPage } from '../contact/ContactPage.tsx';
 import { HomePage } from '../home/HomePage.tsx';
 import { SessionInspector } from './SessionInspector.tsx';
 import './AppShell.css';
@@ -25,6 +27,7 @@ const copyrightYear = new Date().getFullYear();
 const pages = [
   { id: 'home', label: 'Home', icon: <HomeOutlinedIcon /> },
   { id: 'users', label: 'Users', icon: <PeopleOutlinedIcon /> },
+  { id: 'contact', label: 'Contact', icon: <MailOutlinedIcon /> },
 ] as const;
 
 type PageId = (typeof pages)[number]['id'];
@@ -148,6 +151,10 @@ function PageFrame({
 
   if (page === 'home') {
     return <HomePage />;
+  }
+
+  if (page === 'contact') {
+    return <ContactPage />;
   }
 
   if (!canManageUsers) {
