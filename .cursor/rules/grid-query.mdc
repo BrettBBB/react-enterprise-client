@@ -1,0 +1,16 @@
+---
+description: Data grid lists send pagination, filters, and sorts to the API
+alwaysApply: true
+---
+
+# Grid query
+
+A table view uses MUI X `DataGrid` with `dataSource.getRows`. Pass the `GridGetRowsParams` argument through as the `grid` query string. The API applies `paginationModel`, `sortModel`, and `filterModel` in Postgres.
+
+Do not slice, sort, or filter the returned `rows` in the browser. A display conversion, such as dollars to cents on a filter value, happens before the request so the database still sees the stored column. Decimal columns send the number the user typed.
+
+```typescript
+export function listUsers(params: GridGetRowsParams) {
+  return api<UserGridPage>(users, `?grid=${encodeURIComponent(JSON.stringify(params))}`)
+}
+```

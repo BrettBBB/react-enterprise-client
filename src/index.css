@@ -27,6 +27,16 @@ body,
   overflow: auto;
 }
 
+.page-actions .MuiTypography-root {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.MuiButton-root.page-action {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 code {
   font-family: ui-monospace, Consolas, monospace;
 }

@@ -16,6 +16,12 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/auth': apiUrl,
         '/users': apiUrl,
+        '/procedure-codes': apiUrl,
+        '/diagnosis-codes': apiUrl,
+        '/rule-definitions': apiUrl,
+        '/procedure-rules': apiUrl,
+        '/diagnosis-rules': apiUrl,
+        '/claims': apiUrl,
         '/email': apiUrl,
         '/api': apiUrl,
       },

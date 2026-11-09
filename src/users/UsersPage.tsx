@@ -158,6 +158,7 @@ export function UsersPage() {
     <>
       <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
         <Stack
+          className="page-actions"
           direction={{ xs: 'column', sm: 'row' }}
           spacing={2}
           sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
@@ -165,12 +166,9 @@ export function UsersPage() {
           <Typography color="text.secondary">
             Each page, sort, and filter is requested from <code>GET /users</code>.
           </Typography>
-          <Stack direction="row" spacing={1}>
-            <Button onClick={() => void reload()}>Refresh</Button>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>
-              Add user
-            </Button>
-          </Stack>
+          <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>
+            Add user
+          </Button>
         </Stack>
 
         {error ? <Alert severity="error">{error}</Alert> : null}

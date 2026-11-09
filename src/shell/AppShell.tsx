@@ -3,6 +3,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+import MedicalServicesOutlinedIcon from '@mui/icons-material/MedicalServicesOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
@@ -21,6 +22,24 @@ import './AppShell.css';
 const UsersPage = lazy(() =>
   import('../users/UsersPage.tsx').then((module) => ({ default: module.UsersPage })),
 );
+const RulesPage = lazy(() =>
+  import('../rules/RulesPage.tsx').then((module) => ({ default: module.RulesPage })),
+);
+const ClaimsPage = lazy(() =>
+  import('../claims/ClaimsPage.tsx').then((module) => ({ default: module.ClaimsPage })),
+);
+const ProcedureCodesPage = lazy(() =>
+  import('../reference/ReferencePages.tsx').then((module) => ({ default: module.ProcedureCodesPage })),
+);
+const DiagnosisCodesPage = lazy(() =>
+  import('../reference/ReferencePages.tsx').then((module) => ({ default: module.DiagnosisCodesPage })),
+);
+const ProcedureRulesPage = lazy(() =>
+  import('../procedure-rules/ProcedureRulesPage.tsx').then((module) => ({ default: module.ProcedureRulesPage })),
+);
+const DiagnosisRulesPage = lazy(() =>
+  import('../diagnosis-rules/DiagnosisRulesPage.tsx').then((module) => ({ default: module.DiagnosisRulesPage })),
+);
 
 const copyrightYear = new Date().getFullYear();
 
@@ -30,18 +49,52 @@ const pages = [
   { id: 'contact', label: 'Contact', icon: <MailOutlinedIcon /> },
 ] as const;
 
-type PageId = (typeof pages)[number]['id'];
+const catalogPages = [
+  { id: 'procedures', label: 'Procedures' },
+  { id: 'diagnoses', label: 'Diagnoses' },
+  { id: 'rules', label: 'Claim Rules' },
+  { id: 'procedureRules', label: 'Procedure rules' },
+  { id: 'diagnosisRules', label: 'Diagnosis rules' },
+  { id: 'claims', label: 'Claims' },
+] as const;
+
+const catalogViews = {
+  procedures: ProcedureCodesPage,
+  diagnoses: DiagnosisCodesPage,
+  rules: RulesPage,
+  procedureRules: ProcedureRulesPage,
+  diagnosisRules: DiagnosisRulesPage,
+  claims: ClaimsPage,
+} as const;
+
+type PageId = (typeof pages)[number]['id'] | (typeof catalogPages)[number]['id'];
+
+function catalogSelection(page: PageId) {
+  return catalogPages.find((item) => item.id === page);
+}
 
 export function AppShell() {
   const { user, logout } = useAuth();
   const [page, setPage] = useState<PageId>('home');
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
-  const needsAuth = !user && (showSignIn || page === 'users');
+  const catalog = catalogSelection(page);
+  const needsAuth = !user && (showSignIn || page === 'users' || catalog !== undefined);
   const current = pages.find((item) => item.id === page) ?? pages[0];
   const canManageUsers = user?.isAdmin === true;
 
+  function toggleCatalog() {
+    setCatalogOpen((open) => {
+      if (!open) {
+        setPage((currentPage) => (catalogSelection(currentPage) ? currentPage : 'procedures'));
+      }
+      return !open;
+    });
+  }
+
   function signOut() {
     setShowSignIn(false);
+    setCatalogOpen(false);
     setPage('home');
     logout();
   }
@@ -60,7 +113,7 @@ export function AppShell() {
             </span>
           </div>
           <Typography component="h1" className="app-page-title">
-            {needsAuth ? 'Sign in' : current.label}
+            {needsAuth ? 'Sign in' : (catalog?.label ?? current.label)}
           </Typography>
           <Typography className="app-account-name">
             {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
@@ -98,10 +151,33 @@ export function AppShell() {
                         RBAC
                       </span>
                     ) : null}
-                    {selected ? <span className="app-nav-dot" aria-hidden="true" /> : null}
                   </button>
                 )
-              })}
+                })}
+              <button
+                type="button"
+                className="app-nav-item app-nav-group"
+                aria-expanded={catalogOpen}
+                onClick={toggleCatalog}
+              >
+                <MedicalServicesOutlinedIcon />
+                <span className="app-nav-label">Medical Cost Management</span>
+              </button>
+              {catalogOpen ? (
+                <div className="app-subnav">
+                  {catalogPages.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="app-nav-item app-subnav-item"
+                      aria-current={item.id === page ? 'page' : undefined}
+                      onClick={() => setPage(item.id)}
+                    >
+                      <span className="app-nav-label">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </nav>
             <SessionInspector />
           </div>
@@ -155,6 +231,24 @@ function PageFrame({
 
   if (page === 'contact') {
     return <ContactPage />;
+  }
+
+  const catalog = catalogSelection(page);
+  if (catalog) {
+    if (!canManageUsers) {
+      return (
+        <Typography className="app-limited" color="text.secondary">
+          The catalog is limited to administrators.
+        </Typography>
+      );
+    }
+
+    const Page = catalogViews[catalog.id];
+    return (
+      <Suspense fallback={<Typography component="p">Loading catalog…</Typography>}>
+        <Page />
+      </Suspense>
+    );
   }
 
   if (!canManageUsers) {

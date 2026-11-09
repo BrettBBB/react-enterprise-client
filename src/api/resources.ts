@@ -2,6 +2,12 @@
 export const apiResources = {
   auth: '/auth',
   users: '/users',
+  procedureCodes: '/procedure-codes',
+  diagnosisCodes: '/diagnosis-codes',
+  ruleDefinitions: '/rule-definitions',
+  procedureRules: '/procedure-rules',
+  diagnosisRules: '/diagnosis-rules',
+  claims: '/claims',
   email: '/email',
 } as const
 
