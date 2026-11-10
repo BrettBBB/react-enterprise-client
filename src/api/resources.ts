@@ -4,7 +4,7 @@ export const apiResources = {
   users: '/users',
   procedureCodes: '/procedure-codes',
   diagnosisCodes: '/diagnosis-codes',
-  ruleDefinitions: '/rule-definitions',
+  claimRules: '/claim-rules',
   procedureRules: '/procedure-rules',
   diagnosisRules: '/diagnosis-rules',
   claims: '/claims',

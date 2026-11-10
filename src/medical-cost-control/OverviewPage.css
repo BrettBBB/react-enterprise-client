@@ -1,0 +1,111 @@
+.medical-cost-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 800px;
+}
+
+.medical-cost-overview-lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.medical-cost-overview-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.medical-cost-overview-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 280px;
+  border-radius: 16px;
+}
+
+.medical-cost-overview-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.medical-cost-overview-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.medical-cost-overview-title,
+.medical-cost-overview-section-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.medical-cost-overview-title {
+  font-size: 1rem;
+}
+
+.medical-cost-overview-section-title {
+  font-size: 1.25rem;
+}
+
+.medical-cost-overview-copy {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.medical-cost-overview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.medical-cost-overview-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.medical-cost-overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.medical-cost-overview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.medical-cost-overview-link {
+  width: fit-content;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--mui-palette-primary-main, #38bdf8);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.medical-cost-overview-link:hover,
+.medical-cost-overview-link:focus-visible {
+  text-decoration: underline;
+}
+
+.medical-cost-overview-link:focus-visible {
+  outline: 2px solid var(--mui-palette-primary-main, #38bdf8);
+  outline-offset: 2px;
+}

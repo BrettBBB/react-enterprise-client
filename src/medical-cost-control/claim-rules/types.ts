@@ -1,4 +1,4 @@
-import type { MedicalCodeType } from '../catalog/types.ts'
+import type { MedicalCodeType } from '../types.ts'
 
 export type RuleDefinition = {
   id: string

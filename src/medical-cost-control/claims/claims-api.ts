@@ -1,7 +1,7 @@
 import type { GridGetRowsParams } from '@mui/x-data-grid'
-import { api } from '../api/client.ts'
-import { apiResources } from '../api/resources.ts'
-import { withDollarFilters } from '../catalog/money.ts'
+import { api } from '../../api/client.ts'
+import { apiResources } from '../../api/resources.ts'
+import { withDollarFilters } from '../money.ts'
 import type { Claim, ClaimGridPage, ClaimInput } from './types.ts'
 
 const claims = apiResources.claims

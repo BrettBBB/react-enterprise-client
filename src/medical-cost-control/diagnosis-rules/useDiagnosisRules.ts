@@ -1,6 +1,6 @@
 import type { GridGetRowsParams } from '@mui/x-data-grid'
 import { useCallback, useState } from 'react'
-import { errorMessage } from '../api/client.ts'
+import { errorMessage } from '../../api/client.ts'
 import {
   createDiagnosisRule as createDiagnosisRuleRequest,
   deleteDiagnosisRule as deleteDiagnosisRuleRequest,

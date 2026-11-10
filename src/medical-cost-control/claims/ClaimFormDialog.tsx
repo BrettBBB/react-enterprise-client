@@ -8,9 +8,9 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useState, type FormEvent } from 'react'
-import { errorMessage } from '../api/client.ts'
-import { dollarsToCents } from '../catalog/money.ts'
-import { codeTypeOptions, type MedicalCodeType } from '../catalog/types.ts'
+import { errorMessage } from '../../api/client.ts'
+import { dollarsToCents } from '../money.ts'
+import { codeTypeOptions, type MedicalCodeType } from '../types.ts'
 import type { Claim, ClaimInput } from './types.ts'
 
 type ClaimFormDialogProps = {
@@ -80,7 +80,7 @@ export function ClaimFormDialog({ open, claim, onClose, onSubmit }: ClaimFormDia
                 </MenuItem>
               ))}
             </TextField>
-            <TextField label="Code" value={form.code} onChange={(event) => update('code', event.target.value)} required fullWidth helperText="Must already exist in the code catalog." />
+            <TextField label="Code" value={form.code} onChange={(event) => update('code', event.target.value)} required fullWidth helperText="Must already exist in Procedures or Diagnoses." />
             <TextField label="Service date" value={form.serviceDate} onChange={(event) => update('serviceDate', event.target.value)} required fullWidth type="date" slotProps={{ inputLabel: { shrink: true } }} />
             <TextField label="Billed amount (USD)" value={form.fee} onChange={(event) => update('fee', event.target.value)} required fullWidth type="number" slotProps={{ htmlInput: { min: 0, step: '0.01' } }} />
             {editing ? <TextField label="Outcome" value={claim.outcome} disabled fullWidth /> : null}

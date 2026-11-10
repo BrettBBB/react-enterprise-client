@@ -1,4 +1,4 @@
-import type { ClaimOutcome } from '../claims/types.ts'
+import type { ClaimOutcome } from '../medical-cost-control/claims/types.ts'
 
 export type ProcedureCode = {
   code: string

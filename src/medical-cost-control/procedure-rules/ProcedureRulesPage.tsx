@@ -14,18 +14,24 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, useGridApiRef, type GridColDef, type GridDataSource } from '@mui/x-data-grid'
 import { useMemo, useState } from 'react'
-import { errorMessage } from '../api/client.ts'
-import { DiagnosisRuleFormDialog } from './DiagnosisRuleFormDialog.tsx'
-import type { DiagnosisRule, DiagnosisRuleInput } from './types.ts'
-import { useDiagnosisRules } from './useDiagnosisRules.ts'
+import { errorMessage } from '../../api/client.ts'
+import { useAuth } from '../../auth/auth-context.ts'
+import { formatDollars } from '../money.ts'
+import { ProcedureRuleFormDialog } from './ProcedureRuleFormDialog.tsx'
+import type { ProcedureRule, ProcedureRuleInput } from './types.ts'
+import { useProcedureRules } from './useProcedureRules.ts'
 
-export function DiagnosisRulesPage() {
+const procedureTypes = ['CPT', 'HCPCS'] as const
+
+export function ProcedureRulesPage() {
+  const { user } = useAuth()
+  const canChange = user?.isAdmin === true
   const apiRef = useGridApiRef()
-  const { error, getRows, createDiagnosisRule, updateDiagnosisRule, deleteDiagnosisRule } = useDiagnosisRules()
+  const { error, getRows, createProcedureRule, updateProcedureRule, deleteProcedureRule } = useProcedureRules()
   const dataSource = useMemo<GridDataSource>(() => ({ getRows }), [getRows])
-  const [editing, setEditing] = useState<DiagnosisRule | null>(null)
+  const [editing, setEditing] = useState<ProcedureRule | null>(null)
   const [creating, setCreating] = useState(false)
-  const [pendingDelete, setPendingDelete] = useState<DiagnosisRule | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<ProcedureRule | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
 
@@ -34,14 +40,21 @@ export function DiagnosisRulesPage() {
     await apiRef.current?.dataSource.fetchRows()
   }
 
-  const columns = useMemo<GridColDef<DiagnosisRule>[]>(
-    () => [
+  const columns = useMemo<GridColDef<ProcedureRule>[]>(
+    () => {
+      const fields: GridColDef<ProcedureRule>[] = [
       { field: 'name', headerName: 'Rule', flex: 1, minWidth: 180 },
       { field: 'description', headerName: 'Description', flex: 1.6, minWidth: 240 },
+      { field: 'codeType', headerName: 'Type', type: 'singleSelect', valueOptions: [...procedureTypes], width: 110 },
       { field: 'category', headerName: 'Category', flex: 1, minWidth: 160 },
       { field: 'code', headerName: 'Code', width: 110 },
-      { field: 'laterality', headerName: 'Laterality', width: 120 },
-      { field: 'requireHccEligible', headerName: 'Requires HCC', type: 'boolean', width: 140 },
+      {
+        field: 'minStandardCost',
+        headerName: 'Minimum cost',
+        type: 'number',
+        width: 140,
+        valueFormatter: (value: number | null | undefined) => (value == null ? '' : formatDollars(value)),
+      },
       { field: 'enabled', headerName: 'Enabled', type: 'boolean', width: 110 },
       {
         field: 'actions',
@@ -60,17 +73,19 @@ export function DiagnosisRulesPage() {
           </Stack>
         ),
       },
-    ],
-    [],
+      ]
+      return canChange ? fields : fields.filter((column) => column.field !== 'actions')
+    },
+    [canChange],
   )
 
-  async function saveRule(input: DiagnosisRuleInput) {
+  async function saveRule(input: ProcedureRuleInput) {
     setActionError(null)
     if (editing) {
-      await updateDiagnosisRule(editing.id, input)
+      await updateProcedureRule(editing.id, input)
       setEditing(null)
     } else {
-      await createDiagnosisRule(input)
+      await createProcedureRule(input)
       setCreating(false)
     }
     await reload()
@@ -81,7 +96,7 @@ export function DiagnosisRulesPage() {
     setDeleting(true)
     setActionError(null)
     try {
-      await deleteDiagnosisRule(pendingDelete.id)
+      await deleteProcedureRule(pendingDelete.id)
       setPendingDelete(null)
       await reload()
     } catch (caught) {
@@ -96,9 +111,11 @@ export function DiagnosisRulesPage() {
       <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
         <Stack className="page-actions" direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}>
           <Typography color="text.secondary">
-            An ICD-10 claim is flagged when the diagnosis matches the code, category, laterality, and HCC requirement on the rule. Blank fields match every diagnosis. Saving a rule scores every claim again.
+            A CPT or HCPCS claim is flagged when that procedure&apos;s standard cost meets the minimum and any type, category, or code on the rule also matches. Blank fields match every procedure. Saving a rule scores every claim again.
           </Typography>
-          <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add rule</Button>
+          {canChange ? (
+            <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add rule</Button>
+          ) : null}
         </Stack>
         {error ? <Alert severity="error">{error}</Alert> : null}
         {actionError ? <Alert severity="error">{actionError}</Alert> : null}
@@ -120,7 +137,7 @@ export function DiagnosisRulesPage() {
           />
         </Box>
       </Stack>
-      <DiagnosisRuleFormDialog
+      <ProcedureRuleFormDialog
         key={editing?.id ?? (creating ? 'create' : 'idle')}
         open={creating || editing !== null}
         rule={editing}
@@ -131,7 +148,7 @@ export function DiagnosisRulesPage() {
         onSubmit={saveRule}
       />
       <Dialog open={pendingDelete !== null} onClose={deleting ? undefined : () => setPendingDelete(null)}>
-        <DialogTitle>Delete diagnosis rule</DialogTitle>
+        <DialogTitle>Delete procedure rule</DialogTitle>
         <DialogContent>
           <DialogContentText>Delete {pendingDelete?.name}? Claims are scored again without it.</DialogContentText>
         </DialogContent>

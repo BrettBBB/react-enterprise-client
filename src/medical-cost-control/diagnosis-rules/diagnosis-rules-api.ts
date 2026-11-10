@@ -1,6 +1,6 @@
 import type { GridGetRowsParams } from '@mui/x-data-grid'
-import { api } from '../api/client.ts'
-import { apiResources } from '../api/resources.ts'
+import { api } from '../../api/client.ts'
+import { apiResources } from '../../api/resources.ts'
 import type { DiagnosisRule, DiagnosisRuleGridPage, DiagnosisRuleInput } from './types.ts'
 
 const rules = apiResources.diagnosisRules

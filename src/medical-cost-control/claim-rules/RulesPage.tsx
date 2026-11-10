@@ -14,14 +14,17 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, useGridApiRef, type GridColDef, type GridDataSource } from '@mui/x-data-grid'
 import { useMemo, useState } from 'react'
-import { errorMessage } from '../api/client.ts'
-import { formatFee } from '../catalog/money.ts'
-import { codeTypeOptions } from '../catalog/types.ts'
+import { errorMessage } from '../../api/client.ts'
+import { useAuth } from '../../auth/auth-context.ts'
+import { formatFee } from '../money.ts'
+import { codeTypeOptions } from '../types.ts'
 import { RuleFormDialog } from './RuleFormDialog.tsx'
 import type { RuleDefinition, RuleInput } from './types.ts'
 import { useRules } from './useRules.ts'
 
 export function RulesPage() {
+  const { user } = useAuth()
+  const canChange = user?.isAdmin === true
   const apiRef = useGridApiRef()
   const { error, getRows, createRule, updateRule, deleteRule } = useRules()
   const dataSource = useMemo<GridDataSource>(() => ({ getRows }), [getRows])
@@ -37,7 +40,8 @@ export function RulesPage() {
   }
 
   const columns = useMemo<GridColDef<RuleDefinition>[]>(
-    () => [
+    () => {
+      const fields: GridColDef<RuleDefinition>[] = [
       { field: 'name', headerName: 'Name', flex: 1, minWidth: 180 },
       {
         field: 'codeType',
@@ -74,8 +78,10 @@ export function RulesPage() {
           </Stack>
         ),
       },
-    ],
-    [],
+      ]
+      return canChange ? fields : fields.filter((column) => column.field !== 'actions')
+    },
+    [canChange],
   )
 
   async function saveRule(input: RuleInput) {
@@ -112,7 +118,9 @@ export function RulesPage() {
           <Typography color="text.secondary">
             A claim triggers a rule when its billed amount meets the minimum and any type, category, or code on the rule also matches. Blank fields match everything. Saving a rule scores every claim again.
           </Typography>
-          <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add rule</Button>
+          {canChange ? (
+            <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add rule</Button>
+          ) : null}
         </Stack>
         {error ? <Alert severity="error">{error}</Alert> : null}
         {actionError ? <Alert severity="error">{actionError}</Alert> : null}

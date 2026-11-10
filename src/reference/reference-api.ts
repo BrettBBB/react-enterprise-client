@@ -1,7 +1,7 @@
 import type { GridGetRowsParams } from '@mui/x-data-grid'
 import { api } from '../api/client.ts'
 import { apiResources, type ApiResource } from '../api/resources.ts'
-import { clearDiagnosisCategories, clearProcedureCategories } from '../catalog/categories.ts'
+import { clearDiagnosisCategories, clearProcedureCategories } from '../medical-cost-control/categories.ts'
 import type { DiagnosisCode, GridPage, ProcedureCode } from './types.ts'
 
 function list<T>(resource: ApiResource, params: GridGetRowsParams) {

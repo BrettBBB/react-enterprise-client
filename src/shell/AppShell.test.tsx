@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test, vi } from 'vitest'
 import type { User } from '../users/types.ts'
@@ -54,6 +54,42 @@ test('opens on Home and keeps the navigation while switching to Users', async ()
   expect(await screen.findByRole('button', { name: 'Add user' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
+})
+
+test('opens Medical Cost Control on Overview and follows a section link', async () => {
+  const user = userEvent.setup()
+  render(<AppShell />)
+
+  await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
+
+  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByText(/scores billed claims against procedure and diagnosis reference data/)).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Cost Control API' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'React display' })).toBeInTheDocument()
+
+  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Procedures' }))
+
+  expect(screen.getByRole('heading', { name: 'Procedures' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Procedures' })).toHaveAttribute('aria-current', 'page')
+})
+
+test('lets a signed-in member read Medical Cost Control without changing it', async () => {
+  auth.user = { ...ada, isAdmin: false }
+  const user = userEvent.setup()
+  render(<AppShell />)
+
+  await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
+
+  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.queryByText(/limited to administrators/)).not.toBeInTheDocument()
+
+  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Claim Rules' }))
+
+  expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Delete / })).not.toBeInTheDocument()
 })
 
 test('keeps a signed-in user who is not an administrator out of Users', async () => {

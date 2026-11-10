@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         '/users': apiUrl,
         '/procedure-codes': apiUrl,
         '/diagnosis-codes': apiUrl,
-        '/rule-definitions': apiUrl,
+        '/claim-rules': apiUrl,
         '/procedure-rules': apiUrl,
         '/diagnosis-rules': apiUrl,
         '/claims': apiUrl,

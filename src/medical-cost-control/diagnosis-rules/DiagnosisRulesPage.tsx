@@ -14,26 +14,21 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, useGridApiRef, type GridColDef, type GridDataSource } from '@mui/x-data-grid'
 import { useMemo, useState } from 'react'
-import { errorMessage } from '../api/client.ts'
-import { formatFee } from '../catalog/money.ts'
-import { codeTypeOptions } from '../catalog/types.ts'
-import { ClaimFormDialog } from './ClaimFormDialog.tsx'
-import { claimOutcomes, type Claim, type ClaimInput } from './types.ts'
-import { useClaims } from './useClaims.ts'
+import { errorMessage } from '../../api/client.ts'
+import { useAuth } from '../../auth/auth-context.ts'
+import { DiagnosisRuleFormDialog } from './DiagnosisRuleFormDialog.tsx'
+import type { DiagnosisRule, DiagnosisRuleInput } from './types.ts'
+import { useDiagnosisRules } from './useDiagnosisRules.ts'
 
-function formatServiceDate(value: string | Date | null | undefined) {
-  if (value == null || value === '') return ''
-  const date = value instanceof Date ? value : new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString()
-}
-
-export function ClaimsPage() {
+export function DiagnosisRulesPage() {
+  const { user } = useAuth()
+  const canChange = user?.isAdmin === true
   const apiRef = useGridApiRef()
-  const { error, getRows, createClaim, updateClaim, deleteClaim } = useClaims()
+  const { error, getRows, createDiagnosisRule, updateDiagnosisRule, deleteDiagnosisRule } = useDiagnosisRules()
   const dataSource = useMemo<GridDataSource>(() => ({ getRows }), [getRows])
-  const [editing, setEditing] = useState<Claim | null>(null)
+  const [editing, setEditing] = useState<DiagnosisRule | null>(null)
   const [creating, setCreating] = useState(false)
-  const [pendingDelete, setPendingDelete] = useState<Claim | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<DiagnosisRule | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
 
@@ -42,55 +37,16 @@ export function ClaimsPage() {
     await apiRef.current?.dataSource.fetchRows()
   }
 
-  const columns = useMemo<GridColDef<Claim>[]>(
-    () => [
-      { field: 'claimNumber', headerName: 'Claim', width: 140 },
-      {
-        field: 'codeType',
-        headerName: 'Type',
-        type: 'singleSelect',
-        valueOptions: [...codeTypeOptions],
-        width: 110,
-      },
-      { field: 'code', headerName: 'Code', width: 110 },
+  const columns = useMemo<GridColDef<DiagnosisRule>[]>(
+    () => {
+      const fields: GridColDef<DiagnosisRule>[] = [
+      { field: 'name', headerName: 'Rule', flex: 1, minWidth: 180 },
+      { field: 'description', headerName: 'Description', flex: 1.6, minWidth: 240 },
       { field: 'category', headerName: 'Category', flex: 1, minWidth: 160 },
-      { field: 'description', headerName: 'Description', flex: 1.4, minWidth: 220 },
-      {
-        field: 'serviceDate',
-        headerName: 'Service date',
-        type: 'date',
-        width: 140,
-        valueGetter: (value: string | null) => (value ? new Date(value) : null),
-        valueFormatter: (value: Date | string | null) => formatServiceDate(value),
-      },
-      {
-        field: 'billedCents',
-        headerName: 'Billed',
-        type: 'number',
-        width: 130,
-        valueFormatter: (value: number | null | undefined) => (value == null ? '' : formatFee(value)),
-      },
-      {
-        field: 'outcome',
-        headerName: 'Outcome',
-        type: 'singleSelect',
-        valueOptions: [...claimOutcomes],
-        width: 140,
-      },
-      {
-        field: 'procedureFlag',
-        headerName: 'Procedure',
-        type: 'singleSelect',
-        valueOptions: [...claimOutcomes],
-        width: 140,
-      },
-      {
-        field: 'diagnosisFlag',
-        headerName: 'Diagnosis',
-        type: 'singleSelect',
-        valueOptions: [...claimOutcomes],
-        width: 140,
-      },
+      { field: 'code', headerName: 'Code', width: 110 },
+      { field: 'laterality', headerName: 'Laterality', width: 120 },
+      { field: 'requireHccEligible', headerName: 'Requires HCC', type: 'boolean', width: 140 },
+      { field: 'enabled', headerName: 'Enabled', type: 'boolean', width: 110 },
       {
         field: 'actions',
         headerName: 'Actions',
@@ -99,26 +55,28 @@ export function ClaimsPage() {
         width: 110,
         renderCell: ({ row }) => (
           <Stack direction="row">
-            <IconButton aria-label={`Edit ${row.claimNumber}`} onClick={() => setEditing(row)}>
+            <IconButton aria-label={`Edit ${row.name}`} onClick={() => setEditing(row)}>
               <EditIcon />
             </IconButton>
-            <IconButton aria-label={`Delete ${row.claimNumber}`} onClick={() => setPendingDelete(row)}>
+            <IconButton aria-label={`Delete ${row.name}`} onClick={() => setPendingDelete(row)}>
               <DeleteIcon />
             </IconButton>
           </Stack>
         ),
       },
-    ],
-    [],
+      ]
+      return canChange ? fields : fields.filter((column) => column.field !== 'actions')
+    },
+    [canChange],
   )
 
-  async function saveClaim(input: ClaimInput) {
+  async function saveRule(input: DiagnosisRuleInput) {
     setActionError(null)
     if (editing) {
-      await updateClaim(editing.id, input)
+      await updateDiagnosisRule(editing.id, input)
       setEditing(null)
     } else {
-      await createClaim(input)
+      await createDiagnosisRule(input)
       setCreating(false)
     }
     await reload()
@@ -129,7 +87,7 @@ export function ClaimsPage() {
     setDeleting(true)
     setActionError(null)
     try {
-      await deleteClaim(pendingDelete.id)
+      await deleteDiagnosisRule(pendingDelete.id)
       setPendingDelete(null)
       await reload()
     } catch (caught) {
@@ -144,9 +102,11 @@ export function ClaimsPage() {
       <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
         <Stack className="page-actions" direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}>
           <Typography color="text.secondary">
-            Filter outcome, procedure, or diagnosis to TRIGGERED or PASSED. Billed-amount filters are dollars. Each page is requested from <code>GET /claims</code>.
+            An ICD-10 claim is flagged when the diagnosis matches the code, category, laterality, and HCC requirement on the rule. Blank fields match every diagnosis. Saving a rule scores every claim again.
           </Typography>
-          <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add claim</Button>
+          {canChange ? (
+            <Button className="page-action" variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Add rule</Button>
+          ) : null}
         </Stack>
         {error ? <Alert severity="error">{error}</Alert> : null}
         {actionError ? <Alert severity="error">{actionError}</Alert> : null}
@@ -160,7 +120,7 @@ export function ClaimsPage() {
             pageSizeOptions={[10, 25, 50]}
             initialState={{
               pagination: { paginationModel: { page: 0, pageSize: 25 } },
-              sorting: { sortModel: [{ field: 'billedCents', sort: 'desc' }] },
+              sorting: { sortModel: [{ field: 'name', sort: 'asc' }] },
             }}
             disableRowSelectionOnClick
             showToolbar
@@ -168,20 +128,20 @@ export function ClaimsPage() {
           />
         </Box>
       </Stack>
-      <ClaimFormDialog
+      <DiagnosisRuleFormDialog
         key={editing?.id ?? (creating ? 'create' : 'idle')}
         open={creating || editing !== null}
-        claim={editing}
+        rule={editing}
         onClose={() => {
           setCreating(false)
           setEditing(null)
         }}
-        onSubmit={saveClaim}
+        onSubmit={saveRule}
       />
       <Dialog open={pendingDelete !== null} onClose={deleting ? undefined : () => setPendingDelete(null)}>
-        <DialogTitle>Delete claim</DialogTitle>
+        <DialogTitle>Delete diagnosis rule</DialogTitle>
         <DialogContent>
-          <DialogContentText>Delete {pendingDelete?.claimNumber}?</DialogContentText>
+          <DialogContentText>Delete {pendingDelete?.name}? Claims are scored again without it.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setPendingDelete(null)} disabled={deleting}>Cancel</Button>

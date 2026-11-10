@@ -1,6 +1,6 @@
 import type { GridColDef } from '@mui/x-data-grid'
 import { useMemo } from 'react'
-import { formatDollars } from '../catalog/money.ts'
+import { formatDollars } from '../medical-cost-control/money.ts'
 import { ReferenceGrid } from './ReferenceGrid.tsx'
 import {
   importDiagnosisCodes,

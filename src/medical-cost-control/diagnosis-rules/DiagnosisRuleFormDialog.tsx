@@ -9,9 +9,9 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useState, type FormEvent } from 'react'
-import { errorMessage } from '../api/client.ts'
-import { CategoryField } from '../catalog/CategoryField.tsx'
-import { useCodeCategories } from '../catalog/categories.ts'
+import { errorMessage } from '../../api/client.ts'
+import { CategoryField } from '../CategoryField.tsx'
+import { useCodeCategories } from '../categories.ts'
 import type { DiagnosisRule, DiagnosisRuleInput } from './types.ts'
 
 type DiagnosisRuleFormDialogProps = {

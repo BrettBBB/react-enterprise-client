@@ -1,64 +1,88 @@
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
-import MedicalServicesOutlinedIcon from '@mui/icons-material/MedicalServicesOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { lazy, Suspense, useState } from 'react';
-import { apiUrl } from '../api/client.ts';
-import { LoginPage } from '../auth/LoginPage.tsx';
-import { useAuth } from '../auth/auth-context.ts';
-import { ContactPage } from '../contact/ContactPage.tsx';
-import { HomePage } from '../home/HomePage.tsx';
-import { SessionInspector } from './SessionInspector.tsx';
-import './AppShell.css';
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
+import MedicalServicesOutlinedIcon from "@mui/icons-material/MedicalServicesOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
+import Drawer from "@mui/material/Drawer";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { lazy, Suspense, useState, type ReactNode } from "react";
+import { apiUrl } from "../api/client.ts";
+import { LoginPage } from "../auth/LoginPage.tsx";
+import { useAuth } from "../auth/auth-context.ts";
+import { ContactPage } from "../contact/ContactPage.tsx";
+import { HomePage } from "../home/HomePage.tsx";
+import {
+  OverviewPage,
+  type MedicalCostControlSectionId,
+} from "../medical-cost-control/OverviewPage.tsx";
+import "./AppShell.css";
+import { SessionInspector } from "./SessionInspector.tsx";
 
 const UsersPage = lazy(() =>
-  import('../users/UsersPage.tsx').then((module) => ({ default: module.UsersPage })),
+  import("../users/UsersPage.tsx").then((module) => ({
+    default: module.UsersPage,
+  })),
 );
 const RulesPage = lazy(() =>
-  import('../rules/RulesPage.tsx').then((module) => ({ default: module.RulesPage })),
+  import("../medical-cost-control/claim-rules/RulesPage.tsx").then((module) => ({
+    default: module.RulesPage,
+  })),
 );
 const ClaimsPage = lazy(() =>
-  import('../claims/ClaimsPage.tsx').then((module) => ({ default: module.ClaimsPage })),
+  import("../medical-cost-control/claims/ClaimsPage.tsx").then((module) => ({
+    default: module.ClaimsPage,
+  })),
 );
 const ProcedureCodesPage = lazy(() =>
-  import('../reference/ReferencePages.tsx').then((module) => ({ default: module.ProcedureCodesPage })),
+  import("../reference/ReferencePages.tsx").then((module) => ({
+    default: module.ProcedureCodesPage,
+  })),
 );
 const DiagnosisCodesPage = lazy(() =>
-  import('../reference/ReferencePages.tsx').then((module) => ({ default: module.DiagnosisCodesPage })),
+  import("../reference/ReferencePages.tsx").then((module) => ({
+    default: module.DiagnosisCodesPage,
+  })),
 );
 const ProcedureRulesPage = lazy(() =>
-  import('../procedure-rules/ProcedureRulesPage.tsx').then((module) => ({ default: module.ProcedureRulesPage })),
+  import("../medical-cost-control/procedure-rules/ProcedureRulesPage.tsx").then((module) => ({
+    default: module.ProcedureRulesPage,
+  })),
 );
 const DiagnosisRulesPage = lazy(() =>
-  import('../diagnosis-rules/DiagnosisRulesPage.tsx').then((module) => ({ default: module.DiagnosisRulesPage })),
+  import("../medical-cost-control/diagnosis-rules/DiagnosisRulesPage.tsx").then((module) => ({
+    default: module.DiagnosisRulesPage,
+  })),
 );
 
 const copyrightYear = new Date().getFullYear();
 
-const pages = [
-  { id: 'home', label: 'Home', icon: <HomeOutlinedIcon /> },
-  { id: 'users', label: 'Users', icon: <PeopleOutlinedIcon /> },
-  { id: 'contact', label: 'Contact', icon: <MailOutlinedIcon /> },
+const leadingPages = [
+  { id: "home", label: "Home", icon: <HomeOutlinedIcon /> },
+  { id: "users", label: "Users", icon: <PeopleOutlinedIcon />, badge: "RBAC" },
 ] as const;
 
-const catalogPages = [
-  { id: 'procedures', label: 'Procedures' },
-  { id: 'diagnoses', label: 'Diagnoses' },
-  { id: 'rules', label: 'Claim Rules' },
-  { id: 'procedureRules', label: 'Procedure rules' },
-  { id: 'diagnosisRules', label: 'Diagnosis rules' },
-  { id: 'claims', label: 'Claims' },
+const contactPage = {
+  id: "contact",
+  label: "Contact",
+  icon: <MailOutlinedIcon />,
+} as const;
+
+const medicalCostControlPages = [
+  { id: "overview", label: "Overview" },
+  { id: "procedures", label: "Procedures" },
+  { id: "diagnoses", label: "Diagnoses" },
+  { id: "rules", label: "Claim Rules" },
+  { id: "procedureRules", label: "Procedure rules" },
+  { id: "diagnosisRules", label: "Diagnosis rules" },
+  { id: "claims", label: "Claims" },
 ] as const;
 
-const catalogViews = {
+const medicalCostControlViews = {
   procedures: ProcedureCodesPage,
   diagnoses: DiagnosisCodesPage,
   rules: RulesPage,
@@ -67,26 +91,69 @@ const catalogViews = {
   claims: ClaimsPage,
 } as const;
 
-type PageId = (typeof pages)[number]['id'] | (typeof catalogPages)[number]['id'];
+type PageId =
+  | (typeof leadingPages)[number]["id"]
+  | typeof contactPage.id
+  | (typeof medicalCostControlPages)[number]["id"];
 
-function catalogSelection(page: PageId) {
-  return catalogPages.find((item) => item.id === page);
+function medicalCostControlSelection(page: PageId) {
+  return medicalCostControlPages.find((item) => item.id === page);
+}
+
+function NavButton({
+  label,
+  icon,
+  badge,
+  selected,
+  nested = false,
+  onClick,
+}: {
+  label: string;
+  icon?: ReactNode;
+  badge?: string;
+  selected: boolean;
+  nested?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={nested ? "app-nav-item app-subnav-item" : "app-nav-item"}
+      aria-current={selected ? "page" : undefined}
+      onClick={onClick}
+    >
+      {icon}
+      <span className="app-nav-label">{label}</span>
+      {badge ? (
+        <span className="app-nav-badge" aria-hidden="true">
+          {badge}
+        </span>
+      ) : null}
+    </button>
+  );
 }
 
 export function AppShell() {
   const { user, logout } = useAuth();
-  const [page, setPage] = useState<PageId>('home');
-  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [page, setPage] = useState<PageId>("home");
+  const [medicalCostControlOpen, setMedicalCostControlOpen] =
+    useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
-  const catalog = catalogSelection(page);
-  const needsAuth = !user && (showSignIn || page === 'users' || catalog !== undefined);
-  const current = pages.find((item) => item.id === page) ?? pages[0];
+  const medicalCostControl = medicalCostControlSelection(page);
+  const needsAuth =
+    !user &&
+    (showSignIn || page === "users" || medicalCostControl !== undefined);
+  const current = leadingPages.find((item) => item.id === page) ?? contactPage;
   const canManageUsers = user?.isAdmin === true;
 
-  function toggleCatalog() {
-    setCatalogOpen((open) => {
+  function toggleMedicalCostControl() {
+    setMedicalCostControlOpen((open) => {
       if (!open) {
-        setPage((currentPage) => (catalogSelection(currentPage) ? currentPage : 'procedures'));
+        setPage((currentPage) =>
+          medicalCostControlSelection(currentPage)
+            ? currentPage
+            : "overview",
+        );
       }
       return !open;
     });
@@ -94,14 +161,18 @@ export function AppShell() {
 
   function signOut() {
     setShowSignIn(false);
-    setCatalogOpen(false);
-    setPage('home');
+    setMedicalCostControlOpen(false);
+    setPage("home");
     logout();
   }
 
   return (
     <div className="app-frame">
-      <AppBar position="static" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{ borderBottom: 1, borderColor: "divider" }}
+      >
         <Toolbar className="app-toolbar">
           <div className="app-brand">
             <span className="app-brand-mark" aria-hidden="true">
@@ -113,17 +184,27 @@ export function AppShell() {
             </span>
           </div>
           <Typography component="h1" className="app-page-title">
-            {needsAuth ? 'Sign in' : (catalog?.label ?? current.label)}
+            {needsAuth
+              ? "Sign in"
+              : (medicalCostControl?.label ?? current.label)}
           </Typography>
           <Typography className="app-account-name">
-            {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
+            {user ? `${user.firstName} ${user.lastName}` : "Guest"}
           </Typography>
           {user ? (
-            <Button className="app-account-button" color="inherit" onClick={signOut}>
+            <Button
+              className="app-account-button"
+              color="inherit"
+              onClick={signOut}
+            >
               Sign out
             </Button>
           ) : (
-            <Button className="app-account-button" color="inherit" onClick={() => setShowSignIn(true)}>
+            <Button
+              className="app-account-button"
+              color="inherit"
+              onClick={() => setShowSignIn(true)}
+            >
               Sign in
             </Button>
           )}
@@ -134,57 +215,56 @@ export function AppShell() {
         <Drawer variant="permanent" className="app-drawer">
           <div className="app-sidebar">
             <nav className="app-nav" aria-label="Primary">
-              {pages.map((item) => {
-                const selected = item.id === page
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="app-nav-item"
-                    aria-current={selected ? 'page' : undefined}
-                    onClick={() => setPage(item.id)}
-                  >
-                    {item.icon}
-                    <span className="app-nav-label">{item.label}</span>
-                    {item.id === 'users' ? (
-                      <span className="app-nav-badge" aria-hidden="true">
-                        RBAC
-                      </span>
-                    ) : null}
-                  </button>
-                )
-                })}
+              {leadingPages.map((item) => (
+                <NavButton
+                  key={item.id}
+                  label={item.label}
+                  icon={item.icon}
+                  badge={"badge" in item ? item.badge : undefined}
+                  selected={item.id === page}
+                  onClick={() => setPage(item.id)}
+                />
+              ))}
               <button
                 type="button"
                 className="app-nav-item app-nav-group"
-                aria-expanded={catalogOpen}
-                onClick={toggleCatalog}
+                aria-expanded={medicalCostControlOpen}
+                onClick={toggleMedicalCostControl}
               >
                 <MedicalServicesOutlinedIcon />
-                <span className="app-nav-label">Medical Cost Management</span>
+                <span className="app-nav-label">Medical Cost Control</span>
               </button>
-              {catalogOpen ? (
+              {medicalCostControlOpen ? (
                 <div className="app-subnav">
-                  {catalogPages.map((item) => (
-                    <button
+                  {medicalCostControlPages.map((item) => (
+                    <NavButton
                       key={item.id}
-                      type="button"
-                      className="app-nav-item app-subnav-item"
-                      aria-current={item.id === page ? 'page' : undefined}
+                      label={item.label}
+                      nested
+                      selected={item.id === page}
                       onClick={() => setPage(item.id)}
-                    >
-                      <span className="app-nav-label">{item.label}</span>
-                    </button>
+                    />
                   ))}
                 </div>
               ) : null}
+              <NavButton
+                label={contactPage.label}
+                icon={contactPage.icon}
+                selected={page === contactPage.id}
+                onClick={() => setPage(contactPage.id)}
+              />
             </nav>
             <SessionInspector />
           </div>
         </Drawer>
 
         <main className="app-main">
-          <PageFrame page={page} needsAuth={needsAuth} canManageUsers={canManageUsers} />
+          <PageFrame
+            page={page}
+            needsAuth={needsAuth}
+            canManageUsers={canManageUsers}
+            onOpenMedicalCostSection={(section) => setPage(section)}
+          />
         </main>
       </div>
       <footer className="app-footer">
@@ -202,7 +282,11 @@ export function AppShell() {
             <LinkedInIcon className="app-footer-icon" aria-hidden />
             LinkedIn
           </a>
-          <a href="https://github.com/BrettBBB" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/BrettBBB"
+            target="_blank"
+            rel="noreferrer"
+          >
             <GitHubIcon className="app-footer-icon" aria-hidden />
             GitHub
           </a>
@@ -216,36 +300,40 @@ function PageFrame({
   page,
   needsAuth,
   canManageUsers,
+  onOpenMedicalCostSection,
 }: {
   page: PageId;
   needsAuth: boolean;
   canManageUsers: boolean;
+  onOpenMedicalCostSection: (page: MedicalCostControlSectionId) => void;
 }) {
   if (needsAuth) {
     return <LoginPage />;
   }
 
-  if (page === 'home') {
+  if (page === "home") {
     return <HomePage />;
   }
 
-  if (page === 'contact') {
+  if (page === "contact") {
     return <ContactPage />;
   }
 
-  const catalog = catalogSelection(page);
-  if (catalog) {
-    if (!canManageUsers) {
-      return (
-        <Typography className="app-limited" color="text.secondary">
-          The catalog is limited to administrators.
-        </Typography>
-      );
+  const medicalCostControl = medicalCostControlSelection(page);
+  if (medicalCostControl) {
+    if (medicalCostControl.id === "overview") {
+      return <OverviewPage onOpen={onOpenMedicalCostSection} />;
     }
 
-    const Page = catalogViews[catalog.id];
+    const Page = medicalCostControlViews[medicalCostControl.id];
     return (
-      <Suspense fallback={<Typography component="p">Loading catalog…</Typography>}>
+      <Suspense
+        fallback={
+          <Typography component="p">
+            Loading Medical Cost Control…
+          </Typography>
+        }
+      >
         <Page />
       </Suspense>
     );
@@ -260,7 +348,9 @@ function PageFrame({
   }
 
   return (
-    <Suspense fallback={<Typography component="p">Loading directory…</Typography>}>
+    <Suspense
+      fallback={<Typography component="p">Loading directory…</Typography>}
+    >
       <UsersPage />
     </Suspense>
   );
