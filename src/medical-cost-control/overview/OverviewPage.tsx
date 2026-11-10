@@ -4,49 +4,30 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import { Link } from 'react-router-dom'
-import { medicalCostControlSectionPaths } from '../../shell/routes.ts'
+import { medicalCostControlPages, paths } from '../../shell/routes.ts'
 import './OverviewPage.css'
 
-const sections = [
-  {
-    id: 'procedures',
-    label: 'Procedures',
-    description:
-      'CPT and HCPCS reference data, including category, RVUs, and standard cost. The grid is read-only. Import Codes replaces the procedure table, then scores every claim again.',
-  },
-  {
-    id: 'diagnoses',
-    label: 'Diagnoses',
-    description:
-      'ICD-10-CM reference data, including category, laterality, and HCC eligibility. The grid is read-only. Import Codes replaces the diagnosis table, then scores every claim again.',
-  },
-  {
-    id: 'rules',
-    label: 'Claim Rules',
-    description:
-      'Billed-amount policy. A claim is marked TRIGGERED when its billed amount meets the rule minimum and any type, category, or code on the rule also matches. Blank fields match every claim. Saving a rule scores every claim outcome again.',
-  },
-  {
-    id: 'procedureRules',
-    label: 'Procedure rules',
-    description:
-      'Standard-cost policy for CPT and HCPCS. A claim is marked TRIGGERED when the matching procedure’s standard cost meets the rule minimum and any type, category, or code also matches. Saving a rule scores every claim again.',
-  },
-  {
-    id: 'diagnosisRules',
-    label: 'Diagnosis rules',
-    description:
-      'ICD-10 policy. A claim is marked TRIGGERED when its diagnosis matches the rule’s code, category, laterality, and HCC requirement. Blank fields match every diagnosis. Saving a rule scores every claim again.',
-  },
-  {
-    id: 'claims',
-    label: 'Claims',
-    description:
-      'The claim register. Each row shows the billed amount, the outcome from claim rules, and the procedure and diagnosis flags. Adding or editing a claim scores that claim.',
-  },
-] as const
+const sectionDescriptions = {
+  [paths.procedures]:
+    'CPT and HCPCS reference data, including category, RVUs, and standard cost. The grid is read-only. Import Codes replaces the procedure table, then scores every claim again.',
+  [paths.procedureRules]:
+    'Standard-cost policy for CPT and HCPCS. A claim is marked TRIGGERED when the matching procedure’s standard cost meets the rule minimum and any type, category, or code also matches. Saving a rule scores every claim again.',
+  [paths.diagnoses]:
+    'ICD-10-CM reference data, including category, laterality, and HCC eligibility. The grid is read-only. Import Codes replaces the diagnosis table, then scores every claim again.',
+  [paths.diagnosisRules]:
+    'ICD-10 policy. A claim is marked TRIGGERED when its diagnosis matches the rule’s code, category, laterality, and HCC requirement. Blank fields match every diagnosis. Saving a rule scores every claim again.',
+  [paths.claims]:
+    'The claim register. Each row shows the billed amount, the outcome from claim rules, and the procedure and diagnosis flags. Adding or editing a claim scores that claim.',
+  [paths.claimRules]:
+    'Billed-amount policy. A claim is marked TRIGGERED when its billed amount meets the rule minimum and any type, category, or code on the rule also matches. Blank fields match every claim. Saving a rule scores every claim outcome again.',
+} as const
 
-export type MedicalCostControlSectionId = (typeof sections)[number]['id']
+const sections = medicalCostControlPages.flatMap((page) => {
+  if (!(page.path in sectionDescriptions)) {
+    return []
+  }
+  return [{ ...page, description: sectionDescriptions[page.path as keyof typeof sectionDescriptions] }]
+})
 
 export function OverviewPage() {
   return (
@@ -65,8 +46,8 @@ export function OverviewPage() {
               <h2 className="medical-cost-overview-title">Cost Control API</h2>
             </div>
             <p className="medical-cost-overview-copy text-secondary">
-              The API is a NestJS service on PostgreSQL through Prisma. Procedure codes, diagnosis
-              codes, claim rules, procedure rules, diagnosis rules, and claims each have their own
+              The API is a NestJS service on PostgreSQL through Prisma. Procedure codes, procedure
+              rules, diagnosis codes, diagnosis rules, claims, and claim rules each have their own
               resource. A list request sends one grid query, and Postgres applies the page, sort,
               and filter. Saving a claim looks up the code and stores the billed-amount outcome, the
               procedure flag, and the diagnosis flag. Saving a procedure or diagnosis rule, or
@@ -110,8 +91,8 @@ export function OverviewPage() {
         <h2 className="medical-cost-overview-section-title">Sections</h2>
         <ul className="medical-cost-overview-list">
           {sections.map((section) => (
-            <li className="medical-cost-overview-item" key={section.id}>
-              <Link className="medical-cost-overview-link" to={medicalCostControlSectionPaths[section.id]}>
+            <li className="medical-cost-overview-item" key={section.path}>
+              <Link className="medical-cost-overview-link" to={section.path}>
                 {section.label}
               </Link>
               <p className="medical-cost-overview-copy text-secondary">{section.description}</p>

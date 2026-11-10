@@ -3,11 +3,11 @@ export const apiResources = {
   auth: '/auth',
   users: '/users',
   procedureCodes: '/procedure-codes',
-  diagnosisCodes: '/diagnosis-codes',
-  claimRules: '/claim-rules',
   procedureRules: '/procedure-rules',
+  diagnosisCodes: '/diagnosis-codes',
   diagnosisRules: '/diagnosis-rules',
   claims: '/claims',
+  claimRules: '/claim-rules',
   email: '/email',
 } as const
 

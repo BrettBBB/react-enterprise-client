@@ -26,7 +26,7 @@ import { ContactPage } from "../contact/ContactPage.tsx";
 import { HomePage } from "../home/HomePage.tsx";
 import { OverviewPage } from "../medical-cost-control/overview/OverviewPage.tsx";
 import "./AppShell.css";
-import { paths, titleForPath } from "./routes.ts";
+import { medicalCostControlPages, paths, titleForPath } from "./routes.ts";
 import { SessionInspector } from "./SessionInspector.tsx";
 
 const UsersPage = lazy(() =>
@@ -88,16 +88,6 @@ const contactPage = {
   label: "Contact",
   icon: <MailOutlinedIcon />,
 } as const;
-
-const medicalCostControlPages = [
-  { path: paths.overview, label: "Overview" },
-  { path: paths.procedures, label: "Procedures" },
-  { path: paths.procedureRules, label: "Procedure rules" },
-  { path: paths.diagnoses, label: "Diagnoses" },
-  { path: paths.diagnosisRules, label: "Diagnosis rules" },
-  { path: paths.claims, label: "Claims" },
-  { path: paths.claimRules, label: "Claim Rules" },
-] as const;
 
 function NavItem({
   to,
