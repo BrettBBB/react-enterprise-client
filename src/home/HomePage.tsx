@@ -2,14 +2,39 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import ArchitectureIcon from "@mui/icons-material/Architecture";
 import CodeIcon from "@mui/icons-material/Code";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import StorageIcon from "@mui/icons-material/Storage";
-import { Card, CardContent, Chip, Divider } from "@mui/material";
+import { Card, CardContent, Chip, Divider, Tooltip } from "@mui/material";
 import { useState } from "react";
 
 import portrait from "../assets/Brett-Stylized2.jpg";
 import { useAuth } from "../auth/auth-context.ts";
 import "./HomePage.css";
 import { SystemFlowDialog } from "./SystemFlowDialog.tsx";
+
+const documents = [
+  {
+    href: "/Brett_Brinkhoff_Senior_Full_Stack_Engineer(2026).pdf",
+    label: "Resume",
+    title: "Senior Full-Stack Resume (TypeScript, NestJS, React, PostgreSQL)",
+  },
+  {
+    href: "/Case Study - MediShare Incremental Decoupling.pdf",
+    label: "MediShare",
+    title:
+      "Case Study: Modernizing billing architecture and database migration",
+  },
+  {
+    href: "/Case Study - Compassion International Global Communication.pdf",
+    label: "Compassion Intl",
+    title: "Case Study: Scaling global communication to 150M+ messages",
+  },
+  {
+    href: "/Brett Brinkhoff - Rendi Case Study.pdf",
+    label: "Rendi",
+    title: "Case Study: Rendi Systems Architecture & custom e-commerce engine",
+  },
+] as const;
 
 const pipeline = [
   {
@@ -53,17 +78,44 @@ export function HomePage() {
           to Neon Postgres. Sign-in issues a 15-minute access token and a 7-day
           HttpOnly refresh cookie. When a request receives a 401, the client
           renews the access token in the background, and role-based access uses
-          the admin claim. Guests can read this page. An administrator
-          can open the user directory, where every page, sort, and filter is
-          requested from the API.
+          the admin claim. Guests can read this page. An administrator can open
+          the user directory, where every page, sort, and filter is requested
+          from the API.
         </p>
         <div className="home-byline">
-          <img
-            className="home-byline-photo"
-            src={portrait}
-            alt="Brett Brinkhoff"
-          />
-          <p className="home-byline-name">Brett Brinkhoff</p>
+          <div className="home-documents-block">
+            <p className="home-documents-label">Engineering Artifacts:</p>
+            <nav className="home-documents" aria-label="Documents">
+              {documents.map((document) => (
+                <Tooltip
+                  describeChild
+                  key={document.href}
+                  title={document.title}
+                >
+                  <a
+                    className="home-document"
+                    href={encodeURI(document.href)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <PictureAsPdfIcon
+                      className="home-document-icon"
+                      aria-hidden
+                    />
+                    {document.label}
+                  </a>
+                </Tooltip>
+              ))}
+            </nav>
+          </div>
+          <div className="home-signature">
+            <img
+              className="home-byline-photo"
+              src={portrait}
+              alt="Brett Brinkhoff"
+            />
+            <p className="home-byline-name">Brett Brinkhoff</p>
+          </div>
         </div>
       </div>
 
@@ -84,7 +136,8 @@ export function HomePage() {
                 The session keeps the signed-in profile and the short-lived
                 access token, and sends that token with each API request. A 401
                 exchanges the refresh cookie for a new access token and retries
-                the request. The admin claim decides who can view and edit users.
+                the request. The admin claim decides who can view and edit
+                users.
               </p>
               <div className="home-chips">
                 <Chip label="React" size="small" variant="outlined" />
@@ -137,7 +190,11 @@ export function HomePage() {
         <div className="home-heading-row home-flow-heading">
           <AccountTreeIcon color="primary" />
           <h2 className="home-section-title">From a push to production</h2>
-          <button type="button" className="home-flow-button" onClick={() => setFlowOpen(true)}>
+          <button
+            type="button"
+            className="home-flow-button"
+            onClick={() => setFlowOpen(true)}
+          >
             View System Flow Diagram
           </button>
         </div>

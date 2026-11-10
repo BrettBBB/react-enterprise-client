@@ -54,10 +54,60 @@
 
 .home-byline {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: 16px;
+}
+
+.home-documents-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.home-documents-label {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.home-documents {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  min-width: 0;
+}
+
+.home-document {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mui-palette-primary-main, #38bdf8);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.home-document:hover,
+.home-document:focus-visible {
+  text-decoration: underline;
+}
+
+.home-document-icon {
+  font-size: 1rem;
+}
+
+.home-signature {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .home-byline-photo {
