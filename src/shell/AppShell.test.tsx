@@ -80,7 +80,7 @@ test('opens Medical Cost Control on Overview and follows a section link', async 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
   expect(screen.getByTestId('address')).toHaveTextContent(paths.overview)
-  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Overview' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
   expect(screen.getByText(/scores billed claims against procedure and diagnosis reference data/)).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Cost Control API' })).toBeInTheDocument()
@@ -89,7 +89,7 @@ test('opens Medical Cost Control on Overview and follows a section link', async 
   await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Procedures' }))
 
   expect(screen.getByTestId('address')).toHaveTextContent(paths.procedures)
-  expect(screen.getByRole('heading', { name: 'Procedures' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Procedures' })).toBeInTheDocument()
   expect(within(screen.getByRole('navigation', { name: 'Primary' })).getByRole('link', { name: 'Procedures' })).toHaveAttribute(
     'aria-current',
     'page',
@@ -103,14 +103,14 @@ test('lets a guest read Medical Cost Control without changing it', async () => {
 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
-  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Overview' })).toBeInTheDocument()
   expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument()
   expect(screen.getByText('Guest')).toBeInTheDocument()
 
   await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Claim Rules' }))
 
   expect(screen.getByTestId('address')).toHaveTextContent(paths.claimRules)
-  expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Claim Rules' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Delete / })).not.toBeInTheDocument()
@@ -123,13 +123,13 @@ test('lets a signed-in member read Medical Cost Control without changing it', as
 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
-  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Overview' })).toBeInTheDocument()
   expect(screen.queryByText(/limited to administrators/)).not.toBeInTheDocument()
 
   await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Claim Rules' }))
 
   expect(screen.getByTestId('address')).toHaveTextContent(paths.claimRules)
-  expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medical Cost Control | Claim Rules' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Delete / })).not.toBeInTheDocument()

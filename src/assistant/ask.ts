@@ -27,6 +27,7 @@ export function takeAssistantEvents(buffer: string) {
 
 export async function askArchitecture(
   question: string,
+  page: string,
   onText: (text: string) => void,
   signal?: AbortSignal,
 ) {
@@ -36,7 +37,7 @@ export async function askArchitecture(
       Accept: 'text/event-stream',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, page }),
     signal,
   })
   if (!response.ok) {
