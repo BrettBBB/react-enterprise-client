@@ -1,41 +1,54 @@
-import CodeIcon from '@mui/icons-material/Code'
-import StorageIcon from '@mui/icons-material/Storage'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Chip from '@mui/material/Chip'
-import { Link } from 'react-router-dom'
-import { medicalCostControlPages, paths } from '../../shell/routes.ts'
-import './OverviewPage.css'
+import CodeIcon from "@mui/icons-material/Code";
+import StorageIcon from "@mui/icons-material/Storage";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import { Link } from "react-router-dom";
+import { medicalCostControlPages, paths } from "../../shell/routes.ts";
+import "./OverviewPage.css";
 
 const sectionDescriptions = {
   [paths.procedures]:
-    'CPT and HCPCS reference data, including category, RVUs, and standard cost. The grid is read-only. Import Codes replaces the procedure table, then scores every claim again.',
+    "CPT and HCPCS reference data, including category, RVUs, and standard cost. The grid is read-only. Import Codes replaces the procedure table, then scores every claim again.",
   [paths.procedureRules]:
-    'Standard-cost policy for CPT and HCPCS. A claim is marked TRIGGERED when the matching procedure’s standard cost meets the rule minimum and any type, category, or code also matches. Saving a rule scores every claim again.',
+    "Standard-cost policy for CPT and HCPCS. A claim is marked TRIGGERED when the matching procedure’s standard cost meets the rule minimum and any type, category, or code also matches. Saving a rule scores every claim again.",
   [paths.diagnoses]:
-    'ICD-10-CM reference data, including category, laterality, and HCC eligibility. The grid is read-only. Import Codes replaces the diagnosis table, then scores every claim again.',
+    "ICD-10-CM reference data, including category, laterality, and HCC eligibility. The grid is read-only. Import Codes replaces the diagnosis table, then scores every claim again.",
   [paths.diagnosisRules]:
-    'ICD-10 policy. A claim is marked TRIGGERED when its diagnosis matches the rule’s code, category, laterality, and HCC requirement. Blank fields match every diagnosis. Saving a rule scores every claim again.',
+    "ICD-10 policy. A claim is marked TRIGGERED when its diagnosis matches the rule’s code, category, laterality, and HCC requirement. Blank fields match every diagnosis. Saving a rule scores every claim again.",
   [paths.claims]:
-    'The claim register. Each row shows the billed amount, the outcome from claim rules, and the procedure and diagnosis flags. Adding or editing a claim scores that claim.',
+    "The claim register. Each row shows the billed amount, the outcome from claim rules, and the procedure and diagnosis flags. Adding or editing a claim scores that claim.",
   [paths.claimRules]:
-    'Billed-amount policy. A claim is marked TRIGGERED when its billed amount meets the rule minimum and any type, category, or code on the rule also matches. Blank fields match every claim. Saving a rule scores every claim outcome again.',
-} as const
+    "Billed-amount policy. A claim is marked TRIGGERED when its billed amount meets the rule minimum and any type, category, or code on the rule also matches. Blank fields match every claim. Saving a rule scores every claim outcome again.",
+} as const;
 
 const sections = medicalCostControlPages.flatMap((page) => {
   if (!(page.path in sectionDescriptions)) {
-    return []
+    return [];
   }
-  return [{ ...page, description: sectionDescriptions[page.path as keyof typeof sectionDescriptions] }]
-})
+  return [
+    {
+      ...page,
+      description:
+        sectionDescriptions[page.path as keyof typeof sectionDescriptions],
+    },
+  ];
+});
 
 export function OverviewPage() {
   return (
     <div className="medical-cost-overview">
       <p className="medical-cost-overview-lead text-secondary">
-        Medical Cost Control scores billed claims against procedure and diagnosis reference data.
-        The NestJS API stores the codes, the rules, and the claim results. Anyone can read the
-        grids. Adding, editing, and deleting stay with an administrator.
+        I built a similar Cost Management application for a large healthcare
+        provider system. This was recreated from memory over the weekend using
+        partial CPT/HCPCS and ICD-10-CM reference data (about 5,000 codes each).
+      </p>
+      <p className="medical-cost-overview-lead text-secondary">
+        Medical Cost Control scores billed claims against procedure and
+        diagnosis reference data. The NestJS API stores the codes, the rules,
+        and the claim results. Anyone can read the grids. Adding, editing, and
+        deleting stay with an administrator. In the original system, we had full
+        RBAC roles (managed via Active Directory) for each user and section.
       </p>
 
       <div className="medical-cost-overview-columns">
@@ -46,14 +59,17 @@ export function OverviewPage() {
               <h2 className="medical-cost-overview-title">Cost Control API</h2>
             </div>
             <p className="medical-cost-overview-copy text-secondary">
-              The API is a NestJS service on PostgreSQL through Prisma. Procedure codes, procedure
-              rules, diagnosis codes, diagnosis rules, claims, and claim rules each have their own
-              resource. A list request sends one grid query, and Postgres applies the page, sort,
-              and filter. Saving a claim looks up the code and stores the billed-amount outcome, the
-              procedure flag, and the diagnosis flag. Saving a procedure or diagnosis rule, or
-              importing a code file, scores every claim again. Saving a claim rule scores the
-              billed-amount outcome. Category menus read the distinct categories. Reading these
-              routes is public. Adding, editing, deleting, and importing codes require an administrator.
+              The API is a NestJS service on PostgreSQL through Prisma.
+              Procedure codes, procedure rules, diagnosis codes, diagnosis
+              rules, claims, and claim rules each have their own resource. A
+              list request sends one grid query, and Postgres applies the page,
+              sort, and filter. Saving a claim looks up the code and stores the
+              billed-amount outcome, the procedure flag, and the diagnosis flag.
+              Saving a procedure or diagnosis rule, or importing a code file,
+              scores every claim again. Saving a claim rule scores the
+              billed-amount outcome. Category menus read the distinct
+              categories. Reading these routes is public. Adding, editing,
+              deleting, and importing codes require an administrator.
             </p>
             <div className="medical-cost-overview-chips">
               <Chip label="NestJS" size="small" variant="outlined" />
@@ -71,11 +87,13 @@ export function OverviewPage() {
               <h2 className="medical-cost-overview-title">React display</h2>
             </div>
             <p className="medical-cost-overview-copy text-secondary">
-              The client is Vite, React, and TypeScript with Material UI. Each section loads on its
-              own. The grids are MUI X DataGrid tables. The grid request goes to the API, and the
-              table shows the page Postgres returned. Billed-amount filters are converted to cents
-              before they leave the browser. Standard cost is sent as the typed dollar amount.
-              Category lists load once for the session and clear after a successful import.
+              The client is Vite, React, and TypeScript with Material UI. Each
+              section loads on its own. The grids are MUI X DataGrid tables. The
+              grid request goes to the API, and the table shows the page
+              Postgres returned. Billed-amount filters are converted to cents
+              before they leave the browser. Standard cost is sent as the typed
+              dollar amount. Category lists load once for the session and clear
+              after a successful import.
             </p>
             <div className="medical-cost-overview-chips">
               <Chip label="React" size="small" variant="outlined" />
@@ -87,7 +105,10 @@ export function OverviewPage() {
         </Card>
       </div>
 
-      <section className="medical-cost-overview-sections" aria-label="Medical Cost Control sections">
+      <section
+        className="medical-cost-overview-sections"
+        aria-label="Medical Cost Control sections"
+      >
         <h2 className="medical-cost-overview-section-title">Sections</h2>
         <ul className="medical-cost-overview-list">
           {sections.map((section) => (
@@ -95,11 +116,13 @@ export function OverviewPage() {
               <Link className="medical-cost-overview-link" to={section.path}>
                 {section.label}
               </Link>
-              <p className="medical-cost-overview-copy text-secondary">{section.description}</p>
+              <p className="medical-cost-overview-copy text-secondary">
+                {section.description}
+              </p>
             </li>
           ))}
         </ul>
       </section>
     </div>
-  )
+  );
 }
