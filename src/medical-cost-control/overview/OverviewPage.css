@@ -98,6 +98,7 @@
   font-size: 1rem;
   font-weight: 600;
   text-align: left;
+  text-decoration: none;
 }
 
 .medical-cost-overview-link:hover,

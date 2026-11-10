@@ -3,6 +3,8 @@ import StorageIcon from '@mui/icons-material/Storage'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import { Link } from 'react-router-dom'
+import { medicalCostControlSectionPaths } from '../../shell/routes.ts'
 import './OverviewPage.css'
 
 const sections = [
@@ -46,7 +48,7 @@ const sections = [
 
 export type MedicalCostControlSectionId = (typeof sections)[number]['id']
 
-export function OverviewPage({ onOpen }: { onOpen: (page: MedicalCostControlSectionId) => void }) {
+export function OverviewPage() {
   return (
     <div className="medical-cost-overview">
       <p className="medical-cost-overview-lead text-secondary">
@@ -109,13 +111,9 @@ export function OverviewPage({ onOpen }: { onOpen: (page: MedicalCostControlSect
         <ul className="medical-cost-overview-list">
           {sections.map((section) => (
             <li className="medical-cost-overview-item" key={section.id}>
-              <button
-                type="button"
-                className="medical-cost-overview-link"
-                onClick={() => onOpen(section.id)}
-              >
+              <Link className="medical-cost-overview-link" to={medicalCostControlSectionPaths[section.id]}>
                 {section.label}
-              </button>
+              </Link>
               <p className="medical-cost-overview-copy text-secondary">{section.description}</p>
             </li>
           ))}

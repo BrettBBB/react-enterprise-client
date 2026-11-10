@@ -15,7 +15,14 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/auth': apiUrl,
-        '/users': apiUrl,
+        '/users': {
+          target: apiUrl,
+          bypass(req) {
+            if (req.headers.accept?.includes('text/html')) {
+              return '/index.html'
+            }
+          },
+        },
         '/procedure-codes': apiUrl,
         '/diagnosis-codes': apiUrl,
         '/claim-rules': apiUrl,

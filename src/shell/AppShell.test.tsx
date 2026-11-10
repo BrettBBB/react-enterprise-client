@@ -1,8 +1,24 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test, vi } from 'vitest'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import type { User } from '../users/types.ts'
 import { AppShell } from './AppShell.tsx'
+import { paths } from './routes.ts'
+
+function Address() {
+  const { pathname } = useLocation()
+  return <div data-testid="address">{pathname}</div>
+}
+
+function renderShell(path = paths.home) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <Address />
+      <AppShell />
+    </MemoryRouter>,
+  )
+}
 
 const ada: User = {
   id: '1',
@@ -42,42 +58,48 @@ beforeEach(() => {
 
 test('opens on Home and keeps the navigation while switching to Users', async () => {
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
   expect(screen.getByRole('heading', { name: 'Home' })).toBeInTheDocument()
   expect(screen.getByText(/Welcome, Ada Lovelace/)).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Users' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Users' })).toBeInTheDocument()
 
-  await user.click(screen.getByRole('button', { name: 'Users' }))
+  await user.click(screen.getByRole('link', { name: 'Users' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.users)
   expect(screen.getByRole('heading', { name: 'Users' })).toBeInTheDocument()
   expect(await screen.findByRole('button', { name: 'Add user' })).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
 })
 
 test('opens Medical Cost Control on Overview and follows a section link', async () => {
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.overview)
   expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
   expect(screen.getByText(/scores billed claims against procedure and diagnosis reference data/)).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Cost Control API' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'React display' })).toBeInTheDocument()
 
-  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Procedures' }))
+  await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Procedures' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.procedures)
   expect(screen.getByRole('heading', { name: 'Procedures' })).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Procedures' })).toHaveAttribute('aria-current', 'page')
+  expect(within(screen.getByRole('navigation', { name: 'Primary' })).getByRole('link', { name: 'Procedures' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
 })
 
 test('lets a guest read Medical Cost Control without changing it', async () => {
   auth.user = null
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
@@ -85,8 +107,9 @@ test('lets a guest read Medical Cost Control without changing it', async () => {
   expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument()
   expect(screen.getByText('Guest')).toBeInTheDocument()
 
-  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Claim Rules' }))
+  await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Claim Rules' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.claimRules)
   expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
@@ -96,15 +119,16 @@ test('lets a guest read Medical Cost Control without changing it', async () => {
 test('lets a signed-in member read Medical Cost Control without changing it', async () => {
   auth.user = { ...ada, isAdmin: false }
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
   await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
 
   expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
   expect(screen.queryByText(/limited to administrators/)).not.toBeInTheDocument()
 
-  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Claim Rules' }))
+  await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Claim Rules' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.claimRules)
   expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
@@ -114,10 +138,11 @@ test('lets a signed-in member read Medical Cost Control without changing it', as
 test('keeps a signed-in user who is not an administrator out of Users', async () => {
   auth.user = { ...ada, isAdmin: false }
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
-  await user.click(screen.getByRole('button', { name: 'Users' }))
+  await user.click(screen.getByRole('link', { name: 'Users' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.users)
   expect(screen.getByText(/limited to administrators/)).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add user' })).not.toBeInTheDocument()
 })
@@ -125,7 +150,7 @@ test('keeps a signed-in user who is not an administrator out of Users', async ()
 test('shows a guest on Home and asks them to sign in before Users', async () => {
   auth.user = null
   const user = userEvent.setup()
-  render(<AppShell />)
+  renderShell()
 
   expect(screen.getByText('Guest')).toBeInTheDocument()
   expect(screen.getByText('401 Unauthenticated')).toBeInTheDocument()
@@ -144,17 +169,19 @@ test('shows a guest on Home and asks them to sign in before Users', async () => 
     'href',
     'https://github.com/BrettBBB',
   )
-  expect(screen.getByRole('button', { name: 'Contact' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Contact' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add user' })).not.toBeInTheDocument()
 
-  await user.click(screen.getByRole('button', { name: 'Contact' }))
+  await user.click(screen.getByRole('link', { name: 'Contact' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.contact)
   expect(screen.getByRole('heading', { name: 'Contact' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument()
 
-  await user.click(screen.getByRole('button', { name: 'Users' }))
+  await user.click(screen.getByRole('link', { name: 'Users' }))
 
+  expect(screen.getByTestId('address')).toHaveTextContent(paths.users)
   expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument()
   expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Add user' })).not.toBeInTheDocument()
