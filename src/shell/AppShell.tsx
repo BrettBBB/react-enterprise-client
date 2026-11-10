@@ -140,9 +140,7 @@ export function AppShell() {
     useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const medicalCostControl = medicalCostControlSelection(page);
-  const needsAuth =
-    !user &&
-    (showSignIn || page === "users" || medicalCostControl !== undefined);
+  const needsAuth = !user && (showSignIn || page === "users");
   const current = leadingPages.find((item) => item.id === page) ?? contactPage;
   const canManageUsers = user?.isAdmin === true;
 

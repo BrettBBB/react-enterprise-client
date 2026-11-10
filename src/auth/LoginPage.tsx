@@ -1,30 +1,30 @@
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { useState, type FormEvent } from 'react';
-import { errorMessage } from '../api/client.ts';
-import { useAuth } from './auth-context.ts';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { useState, type FormEvent } from "react";
+import { errorMessage } from "../api/client.ts";
+import { useAuth } from "./auth-context.ts";
 
-type Mode = 'sign-in' | 'register';
+type Mode = "sign-in" | "register";
 
 const emptyForm = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  age: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  age: "",
 };
 
 export function LoginPage() {
   const { login, register } = useAuth();
-  const [mode, setMode] = useState<Mode>('sign-in');
+  const [mode, setMode] = useState<Mode>("sign-in");
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +39,7 @@ export function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      if (mode === 'sign-in') {
+      if (mode === "sign-in") {
         await login(form.email.trim(), form.password);
         return;
       }
@@ -53,26 +53,21 @@ export function LoginPage() {
         ...(age ? { age: Number(age) } : {}),
       });
     } catch (caught) {
-      setError(errorMessage(caught, 'Sign-in failed'));
+      setError(errorMessage(caught, "Sign-in failed"));
     } finally {
       setSubmitting(false);
     }
   }
 
-  const registering = mode === 'register';
+  const registering = mode === "register";
 
   return (
-    <Stack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Paper sx={{ width: '100%', maxWidth: 440, p: 4 }}>
+    <Stack sx={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Paper sx={{ width: "100%", maxWidth: 440, p: 4 }}>
         <Stack component="form" spacing={2} onSubmit={onSubmit}>
           <div>
-            <Typography variant="h4" component="p">
-              Brett Brinkhoff
-            </Typography>
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-              {registering
-                ? 'Create an account, then open the user directory.'
-                : 'Sign in to view and edit users from the API.'}
+              {registering ? "Create an account." : "Sign in."}
             </Typography>
           </div>
 
@@ -84,7 +79,7 @@ export function LoginPage() {
                 label="First name"
                 name="firstName"
                 value={form.firstName}
-                onChange={(event) => update('firstName', event.target.value)}
+                onChange={(event) => update("firstName", event.target.value)}
                 required
                 autoFocus
                 fullWidth
@@ -93,7 +88,7 @@ export function LoginPage() {
                 label="Last name"
                 name="lastName"
                 value={form.lastName}
-                onChange={(event) => update('lastName', event.target.value)}
+                onChange={(event) => update("lastName", event.target.value)}
                 required
                 fullWidth
               />
@@ -106,7 +101,7 @@ export function LoginPage() {
             type="email"
             autoComplete="username"
             value={form.email}
-            onChange={(event) => update('email', event.target.value)}
+            onChange={(event) => update("email", event.target.value)}
             required
             autoFocus={!registering}
             fullWidth
@@ -114,10 +109,10 @@ export function LoginPage() {
           <TextField
             label="Password"
             name="password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete={registering ? 'new-password' : 'current-password'}
+            type={showPassword ? "text" : "password"}
+            autoComplete={registering ? "new-password" : "current-password"}
             value={form.password}
-            onChange={(event) => update('password', event.target.value)}
+            onChange={(event) => update("password", event.target.value)}
             required
             slotProps={{
               htmlInput: { minLength: 8 },
@@ -126,7 +121,9 @@ export function LoginPage() {
                   <InputAdornment position="end">
                     <IconButton
                       type="button"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                       onClick={() => setShowPassword((current) => !current)}
                       onMouseDown={(event) => event.preventDefault()}
                       edge="end"
@@ -147,24 +144,35 @@ export function LoginPage() {
               name="age"
               type="number"
               value={form.age}
-              onChange={(event) => update('age', event.target.value)}
+              onChange={(event) => update("age", event.target.value)}
               slotProps={{ htmlInput: { min: 0, max: 120 } }}
               helperText="Optional. 0 to 120."
               fullWidth
             />
           ) : null}
 
-          <Button type="submit" variant="contained" size="large" disabled={submitting}>
-            {submitting ? 'Please wait…' : registering ? 'Create account' : 'Sign in'}
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={submitting}
+          >
+            {submitting
+              ? "Please wait…"
+              : registering
+                ? "Create account"
+                : "Sign in"}
           </Button>
           <Button
             type="button"
             onClick={() => {
-              setMode(registering ? 'sign-in' : 'register');
+              setMode(registering ? "sign-in" : "register");
               setError(null);
             }}
           >
-            {registering ? 'Already have an account? Sign in' : 'Need an account? Create one'}
+            {registering
+              ? "Already have an account? Sign in"
+              : "Need an account? Create one"}
           </Button>
         </Stack>
       </Paper>

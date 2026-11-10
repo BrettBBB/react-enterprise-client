@@ -74,6 +74,25 @@ test('opens Medical Cost Control on Overview and follows a section link', async 
   expect(screen.getByRole('button', { name: 'Procedures' })).toHaveAttribute('aria-current', 'page')
 })
 
+test('lets a guest read Medical Cost Control without changing it', async () => {
+  auth.user = null
+  const user = userEvent.setup()
+  render(<AppShell />)
+
+  await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
+
+  expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument()
+  expect(screen.getByText('Guest')).toBeInTheDocument()
+
+  await user.click(within(screen.getByRole('main')).getByRole('button', { name: 'Claim Rules' }))
+
+  expect(screen.getByRole('heading', { name: 'Claim Rules' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Add rule' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Edit / })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Delete / })).not.toBeInTheDocument()
+})
+
 test('lets a signed-in member read Medical Cost Control without changing it', async () => {
   auth.user = { ...ada, isAdmin: false }
   const user = userEvent.setup()

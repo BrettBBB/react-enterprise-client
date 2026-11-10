@@ -51,8 +51,8 @@ export function OverviewPage({ onOpen }: { onOpen: (page: MedicalCostControlSect
     <div className="medical-cost-overview">
       <p className="medical-cost-overview-lead text-secondary">
         Medical Cost Control scores billed claims against procedure and diagnosis reference data.
-        The NestJS API stores the codes, the rules, and the claim results. The React pages are
-        administrator grids over those resources.
+        The NestJS API stores the codes, the rules, and the claim results. Anyone can read the
+        grids. Adding, editing, and deleting stay with an administrator.
       </p>
 
       <div className="medical-cost-overview-columns">
@@ -69,8 +69,8 @@ export function OverviewPage({ onOpen }: { onOpen: (page: MedicalCostControlSect
               and filter. Saving a claim looks up the code and stores the billed-amount outcome, the
               procedure flag, and the diagnosis flag. Saving a procedure or diagnosis rule, or
               importing a code file, scores every claim again. Saving a claim rule scores the
-              billed-amount outcome. Category menus read the distinct categories. Every one of these
-              routes requires a signed-in access token. Adding, editing, deleting, and importing codes require an administrator.
+              billed-amount outcome. Category menus read the distinct categories. Reading these
+              routes is public. Adding, editing, deleting, and importing codes require an administrator.
             </p>
             <div className="medical-cost-overview-chips">
               <Chip label="NestJS" size="small" variant="outlined" />
