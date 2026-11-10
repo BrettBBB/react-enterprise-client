@@ -19,6 +19,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { ArchitectureAssistant } from "../assistant/ArchitectureAssistant.tsx";
 import { apiUrl } from "../api/client.ts";
 import { useAuth } from "../auth/auth-context.ts";
 import { LoginPage } from "../auth/LoginPage.tsx";
@@ -285,6 +286,7 @@ export function AppShell() {
                 label={contactPage.label}
                 icon={contactPage.icon}
               />
+              <ArchitectureAssistant />
             </nav>
             <SessionInspector />
           </div>

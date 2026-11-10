@@ -1,0 +1,75 @@
+.architecture-assistant-paper {
+  box-sizing: border-box;
+  width: min(420px, 100vw);
+  border-right: 0;
+  border-left: 1px solid var(--mui-palette-divider, #334155);
+}
+
+.architecture-assistant {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  padding: 24px;
+  overflow: auto;
+}
+
+.architecture-assistant-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.architecture-assistant-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.architecture-assistant-copy {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.architecture-assistant-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.architecture-assistant-example {
+  border: 1px solid var(--mui-palette-divider, #334155);
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.architecture-assistant-example:hover:not(:disabled),
+.architecture-assistant-example:focus-visible {
+  border-color: var(--mui-palette-primary-main, #38bdf8);
+}
+
+.architecture-assistant-example:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.architecture-assistant-error {
+  margin: 0;
+  color: var(--mui-palette-error-main, #f87171);
+  font-size: 0.875rem;
+}
+
+.architecture-assistant-answer {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}

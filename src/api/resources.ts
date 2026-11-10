@@ -9,6 +9,7 @@ export const apiResources = {
   claims: '/claims',
   claimRules: '/claim-rules',
   email: '/email',
+  assistant: '/assistant',
 } as const
 
 export type ApiResource = (typeof apiResources)[keyof typeof apiResources]

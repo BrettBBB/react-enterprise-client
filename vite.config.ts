@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
         '/claims': apiUrl,
         '/claim-rules': apiUrl,
         '/email': apiUrl,
+        '/assistant': apiUrl,
         '/api': apiUrl,
       },
     },
