@@ -15,6 +15,7 @@ import Typography from '@mui/material/Typography'
 import { DataGrid, useGridApiRef, type GridColDef, type GridDataSource } from '@mui/x-data-grid'
 import { useMemo, useState } from 'react'
 import { errorMessage } from '../../api/client.ts'
+import { databaseWakeGridProps } from '../../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../../auth/auth-context.ts'
 import { formatDollars } from '../money.ts'
 import { ProcedureRuleFormDialog } from './ProcedureRuleFormDialog.tsx'
@@ -121,6 +122,7 @@ export function ProcedureRulesPage() {
         {actionError ? <Alert severity="error">{actionError}</Alert> : null}
         <Box sx={{ flex: 1, minHeight: 420 }}>
           <DataGrid
+            {...databaseWakeGridProps}
             apiRef={apiRef}
             columns={columns}
             dataSource={dataSource}

@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import { DataGrid, useGridApiRef, type GridColDef, type GridDataSource, type GridValidRowModel } from '@mui/x-data-grid'
 import { useMemo, useState } from 'react'
 import { errorMessage } from '../api/client.ts'
+import { databaseWakeGridProps } from '../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../auth/auth-context.ts'
 
 export function ReferenceGrid<T extends GridValidRowModel>({
@@ -70,6 +71,7 @@ export function ReferenceGrid<T extends GridValidRowModel>({
       {error ? <Alert severity="error">{error}</Alert> : null}
       <Box sx={{ flex: 1, minHeight: 420 }}>
         <DataGrid<T>
+          {...databaseWakeGridProps}
           apiRef={apiRef}
           columns={columns}
           dataSource={dataSource}

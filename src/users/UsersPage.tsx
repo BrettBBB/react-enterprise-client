@@ -20,6 +20,7 @@ import {
 } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { errorMessage } from '../api/client.ts';
+import { databaseWakeGridProps } from '../shell/DatabaseWakeOverlay.tsx';
 import { useAuth } from '../auth/auth-context.ts';
 import type { User, UserInput } from './types.ts';
 import { UserFormDialog } from './UserFormDialog.tsx';
@@ -176,6 +177,7 @@ export function UsersPage() {
 
         <Box sx={{ flex: 1, minHeight: 420 }}>
           <DataGrid
+            {...databaseWakeGridProps}
             apiRef={apiRef}
             columns={columns}
             dataSource={dataSource}
