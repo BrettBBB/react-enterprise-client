@@ -17,6 +17,7 @@ import { useMemo, useState } from 'react'
 import { errorMessage } from '../../api/client.ts'
 import { databaseWakeGridProps } from '../../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../../auth/auth-context.ts'
+import posthog, { isPostHogEnabled } from '../../posthog.ts'
 import { formatFee } from '../money.ts'
 import { codeTypeOptions } from '../types.ts'
 import { ClaimFormDialog } from './ClaimFormDialog.tsx'
@@ -121,6 +122,7 @@ export function ClaimsPage() {
 
   async function saveClaim(input: ClaimInput) {
     setActionError(null)
+    const action = editing ? 'updated' : 'created'
     if (editing) {
       await updateClaim(editing.id, input)
       setEditing(null)
@@ -129,6 +131,9 @@ export function ClaimsPage() {
       setCreating(false)
     }
     await reload()
+    if (isPostHogEnabled) {
+      posthog.capture('claim_saved', { action, code_type: input.codeType })
+    }
   }
 
   async function confirmDelete() {
@@ -139,6 +144,9 @@ export function ClaimsPage() {
       await deleteClaim(pendingDelete.id)
       setPendingDelete(null)
       await reload()
+      if (isPostHogEnabled) {
+        posthog.capture('claim_deleted', { code_type: pendingDelete.codeType })
+      }
     } catch (caught) {
       setActionError(errorMessage(caught, 'Delete failed'))
     } finally {
