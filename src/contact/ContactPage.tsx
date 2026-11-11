@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import { useState, type SubmitEvent } from "react";
 import { errorMessage } from "../api/client.ts";
 import { useAuth } from "../auth/auth-context.ts";
+import posthog, { isPostHogEnabled } from "../posthog.ts";
 import { sendContactMessage } from "./contact-api.ts";
 import "./ContactPage.css";
 
@@ -43,6 +44,9 @@ export function ContactPage() {
       });
       setForm((current) => ({ ...current, message: "" }));
       setSent(true);
+      if (isPostHogEnabled) {
+        posthog.capture("contact_message_sent");
+      }
     } catch (caught) {
       setError(errorMessage(caught, "The message could not be sent"));
     } finally {

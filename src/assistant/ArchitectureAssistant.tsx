@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import { useRef, useState, type FormEvent } from "react";
 import { useLocation } from "react-router-dom";
 import { errorMessage } from "../api/client.ts";
+import posthog, { isPostHogEnabled } from "../posthog.ts";
 import { titleForPath } from "../shell/routes.ts";
 import "./ArchitectureAssistant.css";
 import { askArchitecture } from "./ask.ts";
@@ -46,6 +47,12 @@ export function ArchitectureAssistant() {
         },
         controller.signal,
       );
+      if (isPostHogEnabled) {
+        posthog.capture("architecture_question_answered");
+        posthog.logger.info("architecture assistant response completed", {
+          response_type: "streamed",
+        });
+      }
     } catch (caught) {
       if (!controller.signal.aborted) {
         setError(

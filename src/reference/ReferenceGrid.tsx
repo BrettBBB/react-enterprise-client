@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react'
 import { errorMessage } from '../api/client.ts'
 import { databaseWakeGridProps } from '../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../auth/auth-context.ts'
+import posthog, { isPostHogEnabled } from '../posthog.ts'
 
 export function ReferenceGrid<T extends GridValidRowModel>({
   note,
@@ -49,6 +50,9 @@ export function ReferenceGrid<T extends GridValidRowModel>({
     try {
       setNotice(await onImport())
       await reload()
+      if (isPostHogEnabled) {
+        posthog.capture('reference_codes_imported')
+      }
     } catch (caught) {
       setImportError(errorMessage(caught, 'Import failed'))
     } finally {

@@ -17,6 +17,7 @@ import { useMemo, useState } from 'react'
 import { errorMessage } from '../../api/client.ts'
 import { databaseWakeGridProps } from '../../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../../auth/auth-context.ts'
+import posthog, { isPostHogEnabled } from '../../posthog.ts'
 import { DiagnosisRuleFormDialog } from './DiagnosisRuleFormDialog.tsx'
 import type { DiagnosisRule, DiagnosisRuleInput } from './types.ts'
 import { useDiagnosisRules } from './useDiagnosisRules.ts'
@@ -73,6 +74,7 @@ export function DiagnosisRulesPage() {
 
   async function saveRule(input: DiagnosisRuleInput) {
     setActionError(null)
+    const action = editing ? 'updated' : 'created'
     if (editing) {
       await updateDiagnosisRule(editing.id, input)
       setEditing(null)
@@ -81,6 +83,13 @@ export function DiagnosisRulesPage() {
       setCreating(false)
     }
     await reload()
+    if (isPostHogEnabled) {
+      posthog.capture('diagnosis_rule_saved', {
+        action,
+        enabled: input.enabled,
+        requires_hcc_eligible: input.requireHccEligible,
+      })
+    }
   }
 
   async function confirmDelete() {
@@ -91,6 +100,9 @@ export function DiagnosisRulesPage() {
       await deleteDiagnosisRule(pendingDelete.id)
       setPendingDelete(null)
       await reload()
+      if (isPostHogEnabled) {
+        posthog.capture('diagnosis_rule_deleted')
+      }
     } catch (caught) {
       setActionError(errorMessage(caught, 'Delete failed'))
     } finally {

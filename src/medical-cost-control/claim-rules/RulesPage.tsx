@@ -17,6 +17,7 @@ import { useMemo, useState } from 'react'
 import { errorMessage } from '../../api/client.ts'
 import { databaseWakeGridProps } from '../../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../../auth/auth-context.ts'
+import posthog, { isPostHogEnabled } from '../../posthog.ts'
 import { formatFee } from '../money.ts'
 import { codeTypeOptions } from '../types.ts'
 import { RuleFormDialog } from './RuleFormDialog.tsx'
@@ -87,6 +88,7 @@ export function RulesPage() {
 
   async function saveRule(input: RuleInput) {
     setActionError(null)
+    const action = editing ? 'updated' : 'created'
     if (editing) {
       await updateRule(editing.id, input)
       setEditing(null)
@@ -95,6 +97,13 @@ export function RulesPage() {
       setCreating(false)
     }
     await reload()
+    if (isPostHogEnabled) {
+      posthog.capture('claim_rule_saved', {
+        action,
+        enabled: input.enabled,
+        code_type: input.codeType ?? 'any',
+      })
+    }
   }
 
   async function confirmDelete() {
@@ -105,6 +114,9 @@ export function RulesPage() {
       await deleteRule(pendingDelete.id)
       setPendingDelete(null)
       await reload()
+      if (isPostHogEnabled) {
+        posthog.capture('claim_rule_deleted')
+      }
     } catch (caught) {
       setActionError(errorMessage(caught, 'Delete failed'))
     } finally {

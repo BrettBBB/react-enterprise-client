@@ -17,6 +17,7 @@ import { useMemo, useState } from 'react'
 import { errorMessage } from '../../api/client.ts'
 import { databaseWakeGridProps } from '../../shell/DatabaseWakeOverlay.tsx'
 import { useAuth } from '../../auth/auth-context.ts'
+import posthog, { isPostHogEnabled } from '../../posthog.ts'
 import { formatDollars } from '../money.ts'
 import { ProcedureRuleFormDialog } from './ProcedureRuleFormDialog.tsx'
 import type { ProcedureRule, ProcedureRuleInput } from './types.ts'
@@ -82,6 +83,7 @@ export function ProcedureRulesPage() {
 
   async function saveRule(input: ProcedureRuleInput) {
     setActionError(null)
+    const action = editing ? 'updated' : 'created'
     if (editing) {
       await updateProcedureRule(editing.id, input)
       setEditing(null)
@@ -90,6 +92,13 @@ export function ProcedureRulesPage() {
       setCreating(false)
     }
     await reload()
+    if (isPostHogEnabled) {
+      posthog.capture('procedure_rule_saved', {
+        action,
+        enabled: input.enabled,
+        code_type: input.codeType ?? 'any',
+      })
+    }
   }
 
   async function confirmDelete() {
@@ -100,6 +109,9 @@ export function ProcedureRulesPage() {
       await deleteProcedureRule(pendingDelete.id)
       setPendingDelete(null)
       await reload()
+      if (isPostHogEnabled) {
+        posthog.capture('procedure_rule_deleted')
+      }
     } catch (caught) {
       setActionError(errorMessage(caught, 'Delete failed'))
     } finally {
