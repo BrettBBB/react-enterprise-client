@@ -364,7 +364,12 @@ export function AppShell() {
         </main>
       </div>
       <footer className="app-footer">
-        <p className="app-footer-copy">© {copyrightYear} Brett Brinkhoff</p>
+        <div className="app-footer-identity">
+          <p className="app-footer-copy">© {copyrightYear} Brett Brinkhoff</p>
+          <p className="app-footer-build">
+            build {import.meta.env.VITE_APP_BUILD}
+          </p>
+        </div>
         <nav className="app-footer-links" aria-label="Footer links">
           <a href={`${apiUrl}/api`} target="_blank" rel="noreferrer">
             <DescriptionOutlinedIcon className="app-footer-icon" aria-hidden />
