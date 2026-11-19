@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: react-enterprise-client
+    runtime: static
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    staticPublishPath: dist
+    routes:
+      # Client routes have no file on the CDN. Serve the app and keep the URL.
+      - type: rewrite
+        source: /*
+        destination: /index.html
