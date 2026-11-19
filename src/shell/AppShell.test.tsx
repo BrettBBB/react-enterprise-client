@@ -156,6 +156,11 @@ test('shows a guest on Home and asks them to sign in before Users', async () => 
   expect(screen.getByText('401 Unauthenticated')).toBeInTheDocument()
   expect(screen.getByText(/Welcome, Guest/)).toBeInTheDocument()
   expect(screen.getByText(`© ${new Date().getFullYear()} Brett Brinkhoff`)).toBeInTheDocument()
+  expect(
+    screen.getByText(
+      `build ${import.meta.env.VITE_APP_BUILD}`,
+    ),
+  ).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'API docs' })).toHaveAttribute(
     'href',
     `${import.meta.env.VITE_API_URL}/api`,
