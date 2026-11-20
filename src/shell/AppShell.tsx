@@ -177,7 +177,9 @@ export function AppShell() {
   useEffect(() => {
     if (onMedicalCostPage) {
       setMedicalCostControlOpen(true);
+      return;
     }
+    setMedicalCostControlOpen(false);
   }, [onMedicalCostPage]);
 
   useEffect(() => {
