@@ -96,6 +96,31 @@ test('opens Medical Cost Control on Overview and follows a section link', async 
   )
 })
 
+test('closes Medical Cost Control when another section is selected', async () => {
+  const user = userEvent.setup()
+  renderShell()
+
+  await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
+
+  const navigation = screen.getByRole('navigation', { name: 'Primary' })
+  expect(within(navigation).getByRole('link', { name: 'Overview' })).toBeInTheDocument()
+
+  await user.click(screen.getByRole('link', { name: 'Home' }))
+
+  expect(screen.getByRole('heading', { name: 'Home' })).toBeInTheDocument()
+  expect(within(navigation).queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Medical Cost Control' })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+
+  await user.click(screen.getByRole('button', { name: 'Medical Cost Control' }))
+  await user.click(screen.getByRole('link', { name: 'Contact' }))
+
+  expect(screen.getByRole('heading', { name: 'Contact' })).toBeInTheDocument()
+  expect(within(navigation).queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument()
+})
+
 test('lets a guest read Medical Cost Control without changing it', async () => {
   auth.user = null
   const user = userEvent.setup()
